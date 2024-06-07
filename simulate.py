@@ -212,15 +212,19 @@ class Simulator:
                 min_distance = particle1.radius + particle2.radius
 
                 # Collision detected and being within board
+                collision_detection_applied = False
                 if distance < min_distance:
                     particle1.collision_behaviour()
                     particle2.collision_behaviour()
+                    collision_detection_applied = True
                 if not self.in_board(particle1):
                     self.move_in_board(particle1)
-                    particle1.collision_behaviour()
+                    if not collision_detection_applied:
+                        particle1.collision_behaviour()
                 if not self.in_board(particle2):
                     self.move_in_board(particle2)
-                    particle2.collision_behaviour()
+                    if not collision_detection_applied:
+                        particle2.collision_behaviour()
 
     def run(self):
         running = True
