@@ -1,3 +1,4 @@
+import numpy as np
 import pygame
 import sys
 import math
@@ -20,7 +21,8 @@ class Particle:
         update_color(): Updates the color of the particle (to be implemented in subclasses).
     """
 
-    def __init__(self, x, y, radius, shape):
+    def __init__(self, id, x, y, radius, shape):
+        self.id = id
         self.x = x
         self.y = y
         self.radius = radius
@@ -53,14 +55,14 @@ class LinearParticle(Particle):
         update_color(): Updates the color based on the x-coordinate.
     """
 
-    def __init__(self, x, y, radius, speed_x, speed_y, shape='circle'):
-        super().__init__(x, y, radius, shape)
+    def __init__(self, id, x, y, radius, speed_x, speed_y, shape='circle'):
+        super().__init__(id, x, y, radius, shape)
         self.speed_x = speed_x
         self.speed_y = speed_y
 
-    def move(self):
-        self.x += self.speed_x
-        self.y += self.speed_y
+    def move(self, time_step):
+        self.x += self.speed_x * time_step
+        self.y += self.speed_y * time_step
 
     def update_color(self, width, height):
         if self.x < width // 2:
@@ -93,16 +95,16 @@ class CircularParticle(Particle):
         update_color(): Updates the color based on the y-coordinate.
     """
 
-    def __init__(self, x, y, radius, center_x, center_y, orbit_radius, angle_speed, shape='circle'):
-        super().__init__(x, y, radius, shape)
+    def __init__(self, id, x, y, radius, center_x, center_y, orbit_radius, angle_speed, shape='circle'):
+        super().__init__(id, x, y, radius, shape)
         self.center_x = center_x
         self.center_y = center_y
         self.orbit_radius = orbit_radius
         self.angle = 0
         self.angle_speed = angle_speed
 
-    def move(self):
-        self.angle += self.angle_speed
+    def move(self, time_step):
+        self.angle += self.angle_speed * time_step
         self.x = self.center_x + self.orbit_radius * math.cos(self.angle)
         self.y = self.center_y + self.orbit_radius * math.sin(self.angle)
 
@@ -139,11 +141,12 @@ class Simulator:
         run(): Runs the simulation loop.
     """
 
-    def __init__(self, width, height, contact_aware=False):
+    def __init__(self, width, height, time_step, contact_aware=False):
         self.width = width
         self.height = height
         self.particles = []
         self.contact_aware = contact_aware
+        self.time_step = time_step
         self.init_pygame()
 
     def init_pygame(self):
@@ -162,8 +165,8 @@ class Simulator:
         Returns:
             tuple: A tuple containing the x and y coordinates for the particle.
         """
-        x = random.randint(radius, self.width - radius)
-        y = random.randint(radius, self.height - radius)
+        x = random.randint(2 * radius, self.width - 2 * radius)
+        y = random.randint(2 * radius, self.height - 2 * radius)
         assert radius <= x <= self.width - radius
         assert radius <= y <= self.height - radius
         return x, y
@@ -177,14 +180,15 @@ class Simulator:
         return True
 
     def move_in_board(self, particle):
-        if particle.x - particle.radius <= 0:
+        if particle.x - particle.radius < 0:
             particle.x = particle.radius
-        if particle.x + particle.radius >= self.width:
+        if particle.x + particle.radius > self.width:
             particle.x = self.width - particle.radius
-        if particle.y - particle.radius <= 0:
+        if particle.y - particle.radius < 0:
             particle.y = particle.radius
-        if particle.y + particle.radius >= self.height:
+        if particle.y + particle.radius > self.height:
             particle.y = self.height - particle.radius
+
     def draw(self):
         self.screen.fill((0, 0, 0))  # Fill the screen with black
         pygame.draw.line(self.screen, (255, 255, 255), (self.width // 2, 0), (self.width // 2, self.height), 1)
@@ -201,6 +205,8 @@ class Simulator:
                 raise ValueError("Invalid particle shape")
 
     def check_collisions(self):
+        particle_collides = list(len(self.particles) * [False])
+        # Collision between particles
         for i, particle1 in enumerate(self.particles):
             for j, particle2 in enumerate(self.particles):
                 if i >= j:
@@ -212,19 +218,19 @@ class Simulator:
                 min_distance = particle1.radius + particle2.radius
 
                 # Collision detected and being within board
-                collision_detection_applied = False
-                if distance < min_distance:
-                    particle1.collision_behaviour()
-                    particle2.collision_behaviour()
-                    collision_detection_applied = True
-                if not self.in_board(particle1):
-                    self.move_in_board(particle1)
-                    if not collision_detection_applied:
-                        particle1.collision_behaviour()
-                if not self.in_board(particle2):
-                    self.move_in_board(particle2)
-                    if not collision_detection_applied:
-                        particle2.collision_behaviour()
+                if distance < min_distance * 1.2:
+                    particle_collides[particle1.id] = True
+                    particle_collides[particle2.id] = True
+
+        # Collision with board
+        for i, particle in enumerate(self.particles):
+            if not self.in_board(particle):
+                self.move_in_board(particle)
+                particle_collides[particle.id] = True
+
+            if particle_collides[particle.id]:
+                particle.collision_behaviour()
+                particle.move(self.time_step)
 
     def run(self):
         running = True
@@ -235,12 +241,13 @@ class Simulator:
 
             # Move particles
             for particle in self.particles:
-                particle.move()
-
-                particle.update_color(self.width, self.height)
+                particle.move(self.time_step)
 
             if self.contact_aware:
                 self.check_collisions()
+
+            for particle in self.particles:
+                particle.update_color(self.width, self.height)
 
             # Draw everything
             self.draw()
@@ -259,27 +266,35 @@ if __name__ == "__main__":
     screen_height = 600
 
     # Create the simulator
-    simulator = Simulator(screen_width, screen_height, contact_aware=True)
+    simulator = Simulator(screen_width, screen_height, 0.5, contact_aware=True)
 
     # Add multiple particles
     num_particles = 5
     particle_radius = 10
+    particles_counter = 0
     for _ in range(num_particles):
         x, y = simulator.random_placement(particle_radius)
         radius = 10
         speed_x = 5
         speed_y = 5
         shape = 'circle' if _ % 2 == 0 else 'square'
-        simulator.add_particle(LinearParticle(x, y, radius, speed_x, speed_y, shape))
+        simulator.add_particle(LinearParticle(particles_counter, x, y, radius, speed_x, speed_y, shape))
+        particles_counter = particles_counter + 1
 
     for _ in range(num_particles):
-        center_x, center_y = simulator.random_placement(particle_radius)
-        orbit_radius = 100 + 50 * (_ % 3)
+        y = 0
+        x = screen_width // (3 * num_particles) * (_ + 1)
+        center_x = screen_width // 2
+        center_y = screen_height // 2
+        orbit_radius = np.hypot(x, y)
         angle_speed = 0.02 * (_ % 4 + 1)
         radius = 10
         shape = 'circle' if _ % 2 == 0 else 'square'
         simulator.add_particle(
-            CircularParticle(center_x, center_y, radius, center_x, center_y, orbit_radius, angle_speed, shape))
+            CircularParticle(particles_counter, x, y, radius, center_x, center_y, orbit_radius,
+                             angle_speed, shape))
+
+        particles_counter = particles_counter + 1
 
     # Run the simulation
     simulator.run()
