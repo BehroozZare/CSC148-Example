@@ -208,3 +208,51 @@ def compute_init_positions(screen_height: int, screen_width: int, solar_distance
 ```
 
 And it did fix the code! So next time that I am writing a doctest, I will make sure that the strings are the same! So at least for our example, the code is working. But maybe it is just true for this example, what about the input that is given to the function? Let’s run the code and perform the basic way of debugging— Let's use ```print``` function and use the variables and see what's happening step-by-step!
+
+
+```Python
+def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
+    """Return the initial position of each planet
+    >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
+    [(62.0, 0), (124.0, 0), (186.0, 0), (248.0, 0), (372.0, 0), (434.0, 0), (496.0, 0), (558.0, 0)]
+    """
+
+    # Check the precondition
+    assert solar_distances != []
+    assert screen_height != 0
+    assert screen_width != 0
+
+    # Compute the distance between the sun and the last planet
+    furthest_planet_distance = sum(solar_distances)
+    print("The solar distances are", solar_distances, "- the furthest planet is at", furthest_planet_distance)
+    # Compute the screen size
+    screen_size = min(screen_height, screen_width)
+    print("screen height", screen_height, "- screen width", screen_width,
+          "- screen size", screen_size)
+
+    # Compute the scaling factor
+    scaling_factor = screen_size / furthest_planet_distance
+    screen_distances = [distance * scaling_factor for distance in solar_distances]
+    print("Scaler factor:", scaling_factor, "- screen distances", screen_distances)
+    # Compute the distance between each planet and sun (the center)
+    distance_to_sun_in_screen = 0
+    init_pos = []
+    for s_dist in screen_distances:
+        distance_to_sun_in_screen += s_dist
+        init_pos.append((distance_to_sun_in_screen, 0))
+
+        assert distance_to_sun_in_screen <= screen_size
+
+    print("initial positions", init_pos)
+    return init_pos
+```
+
+I like to see every variables, Let's see the output!
+```
+The solar distances are [31, 31, 31, 31, 62, 31, 31, 31] - the furthest planet is at 279
+screen height 720 - screen width 1280 - screen size 720
+Scaler factor: 2.5806451612903225 - screen distances [80.0, 80.0, 80.0, 80.0, 160.0, 80.0, 80.0, 80.0]
+initial positions [(80.0, 0), (160.0, 0), (240.0, 0), (320.0, 0), (480.0, 0), (560.0, 0), (640.0, 0), (720.0, 0)]
+```
+
+The first two lines of printing are what we expected. For the third line, we can see that the output of 80 is actually a rounding of 79.98! While it seems okay for this example, we should keep in mind that it can produce bugs for other inputs as we saw in our [Design Section](../Design/README.md). But that's a fight for another day! For now, the output of our simulator is way off, and the initial positions are not violating the screen size. So basically, the function works based on our intention! This only means one thing: we need to refine our understanding of the problem as our design itself has a problem!

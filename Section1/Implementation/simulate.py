@@ -4,6 +4,7 @@ import math
 import numpy as np
 import imageio
 
+
 class Particle:
     """
     A base class for particles.
@@ -188,34 +189,36 @@ class Simulator:
         sys.exit()
 
 
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
-    """
-    Computes the orbit radius of planets based on normalized distances.
+# def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
+#     """
+#     Computes the orbit radius of planets based on normalized distances.
+#
+#     Args:
+#         screen_width (int): The width of the simulation screen.
+#         normalized_distances (list of float): The normalized distances of each planet to the sun.
+#
+#     Returns:
+#         list of float: The computed orbit radii for each planet.
+#         :param screen_height:
+#     """
+#     min_screen_size = min(screen_height, screen_width)
+#     furthest_planet_distance = 0
+#     for distance in solar_distances:
+#         furthest_planet_distance += distance
+#
+#     scaler_factor = (min_screen_size // 2) / furthest_planet_distance
+#
+#     screen_distances = [distance * scaler_factor for distance in solar_distances]
+#
+#     distance_to_sun_in_screen = 0
+#     init_pos = []
+#     for s_dist in screen_distances:
+#         distance_to_sun_in_screen += s_dist
+#         init_pos.append((distance_to_sun_in_screen + screen_width // 2, screen_height // 2))
+#
+#     return init_pos
 
-    Args:
-        screen_width (int): The width of the simulation screen.
-        normalized_distances (list of float): The normalized distances of each planet to the sun.
 
-    Returns:
-        list of float: The computed orbit radii for each planet.
-        :param screen_height:
-    """
-    min_screen_size = min(screen_height, screen_width)
-    furthest_planet_distance = 0
-    for distance in solar_distances:
-        furthest_planet_distance += distance
-
-    scaler_factor = (min_screen_size // 2) / furthest_planet_distance
-
-    screen_distances = [distance * scaler_factor for distance in solar_distances]
-
-    distance_to_sun_in_screen = 0
-    init_pos = []
-    for s_dist in screen_distances:
-        distance_to_sun_in_screen += s_dist
-        init_pos.append((distance_to_sun_in_screen + screen_width // 2, screen_height // 2))
-
-    return init_pos
 #
 # def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
 #     """Return the intial position of each planet
@@ -239,9 +242,8 @@ def compute_init_positions(screen_height: int, screen_width: int, solar_distance
 #
 #     return init_pos
 
-
 def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
-    """Return the intial position of each planet
+    """Return the initial position of each planet
     >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
     [(62.0, 0), (124.0, 0), (186.0, 0), (248.0, 0), (372.0, 0), (434.0, 0), (496.0, 0), (558.0, 0)]
     """
@@ -252,17 +254,17 @@ def compute_init_positions(screen_height: int, screen_width: int, solar_distance
     assert screen_width != 0
 
     # Compute the distance between the sun and the last planet
-    furthest_planet_distance = 0
-    for distance in solar_distances:
-        furthest_planet_distance += distance
-
+    furthest_planet_distance = sum(solar_distances)
+    print("The solar distances are", solar_distances, "- the furthest planet is at", furthest_planet_distance)
     # Compute the screen size
-    min_screen_size = min(screen_height, screen_width)
+    screen_size = min(screen_height, screen_width)
+    print("screen height", screen_height, "- screen width", screen_width,
+          "- screen size", screen_size)
 
     # Compute the scaling factor
-    scaler_factor = min_screen_size / furthest_planet_distance
-    screen_distances = [distance * scaler_factor for distance in solar_distances]
-
+    scaling_factor = screen_size / furthest_planet_distance
+    screen_distances = [distance * scaling_factor for distance in solar_distances]
+    print("Scaler factor:", scaling_factor, "- screen distances", screen_distances)
     # Compute the distance between each planet and sun (the center)
     distance_to_sun_in_screen = 0
     init_pos = []
@@ -270,6 +272,9 @@ def compute_init_positions(screen_height: int, screen_width: int, solar_distance
         distance_to_sun_in_screen += s_dist
         init_pos.append((distance_to_sun_in_screen, 0))
 
+        assert distance_to_sun_in_screen <= screen_size
+
+    print("initial positions", init_pos)
     return init_pos
 
 
