@@ -195,7 +195,7 @@ Let's start with the example that we have already written! In the course note, t
 
 and ..
 
-![alt text](Figures/image.png)
+![alt text](Figures/DoctestError.png)
 
 Well, at first glance it is a red error! But, looking closer to the problem, it seems that our function is not providing any bad problem. The "Expected" values and the "Got" are not different! But why this error? Remember that programming languages are not smart! So, maybe the string in Expected and Got are not the same! So I changed the doctest to this:
 
