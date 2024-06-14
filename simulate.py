@@ -269,17 +269,17 @@ if __name__ == "__main__":
     simulator = Simulator(screen_width, screen_height, 0.5, contact_aware=True)
 
     # Add multiple particles
-    num_particles = 5
+    num_particles = 8
     particle_radius = 10
     particles_counter = 0
-    for _ in range(num_particles):
-        x, y = simulator.random_placement(particle_radius)
-        radius = 10
-        speed_x = 5
-        speed_y = 5
-        shape = 'circle' if _ % 2 == 0 else 'square'
-        simulator.add_particle(LinearParticle(particles_counter, x, y, radius, speed_x, speed_y, shape))
-        particles_counter = particles_counter + 1
+    # for _ in range(num_particles):
+    #     x, y = simulator.random_placement(particle_radius)
+    #     radius = 10
+    #     speed_x = 5
+    #     speed_y = 5
+    #     shape = 'circle' if _ % 2 == 0 else 'square'
+    #     simulator.add_particle(LinearParticle(particles_counter, x, y, radius, speed_x, speed_y, shape))
+    #     particles_counter = particles_counter + 1
 
     for _ in range(num_particles):
         y = 0
