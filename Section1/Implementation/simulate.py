@@ -188,7 +188,7 @@ class Simulator:
         sys.exit()
 
 
-def compute_orbit_radius(screen_height, normalized_distances):
+def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
     """
     Computes the orbit radius of planets based on normalized distances.
 
@@ -198,16 +198,79 @@ def compute_orbit_radius(screen_height, normalized_distances):
 
     Returns:
         list of float: The computed orbit radii for each planet.
+        :param screen_height:
     """
-    dist_to_sun = 0
-    norm_distance_to_sun = []
-    for distance in normalized_distances:
-        dist_to_sun += distance
-        norm_distance_to_sun.append(dist_to_sun)
+    min_screen_size = min(screen_height, screen_width)
+    furthest_planet_distance = 0
+    for distance in solar_distances:
+        furthest_planet_distance += distance
 
-    max_distance = screen_width // 2  # Max distance from the center (sun) to the edge of the screen
-    orbit_radius = [max_distance * distance for distance in norm_distance_to_sun]
-    return orbit_radius
+    scaler_factor = (min_screen_size // 2) / furthest_planet_distance
+
+    screen_distances = [distance * scaler_factor for distance in solar_distances]
+
+    distance_to_sun_in_screen = 0
+    init_pos = []
+    for s_dist in screen_distances:
+        distance_to_sun_in_screen += s_dist
+        init_pos.append((distance_to_sun_in_screen + screen_width // 2, screen_height // 2))
+
+    return init_pos
+#
+# def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
+#     """Return the intial position of each planet
+#     >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
+#     [(62,0),(124,0),(186,0),(248,0),(372,0),(434,0),(496,0), (558,0)]
+#     """
+#     min_screen_size = min(screen_height, screen_width)
+#     furthest_planet_distance = 0
+#     for distance in solar_distances:
+#         furthest_planet_distance += distance
+#
+#     scaler_factor = (min_screen_size // 2) / furthest_planet_distance
+#
+#     screen_distances = [distance * scaler_factor for distance in solar_distances]
+#
+#     distance_to_sun_in_screen = 0
+#     init_pos = []
+#     for s_dist in screen_distances:
+#         distance_to_sun_in_screen += s_dist
+#         init_pos.append((distance_to_sun_in_screen + screen_width // 2, screen_height // 2))
+#
+#     return init_pos
+
+
+def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
+    """Return the intial position of each planet
+    >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
+    [(62.0, 0), (124.0, 0), (186.0, 0), (248.0, 0), (372.0, 0), (434.0, 0), (496.0, 0), (558.0, 0)]
+    """
+
+    # Check the precondition
+    assert solar_distances != []
+    assert screen_height != 0
+    assert screen_width != 0
+
+    # Compute the distance between the sun and the last planet
+    furthest_planet_distance = 0
+    for distance in solar_distances:
+        furthest_planet_distance += distance
+
+    # Compute the screen size
+    min_screen_size = min(screen_height, screen_width)
+
+    # Compute the scaling factor
+    scaler_factor = min_screen_size / furthest_planet_distance
+    screen_distances = [distance * scaler_factor for distance in solar_distances]
+
+    # Compute the distance between each planet and sun (the center)
+    distance_to_sun_in_screen = 0
+    init_pos = []
+    for s_dist in screen_distances:
+        distance_to_sun_in_screen += s_dist
+        init_pos.append((distance_to_sun_in_screen, 0))
+
+    return init_pos
 
 
 # Example usage
@@ -217,14 +280,20 @@ if __name__ == "__main__":
     screen_width = 16 * x
     screen_height = 9 * x
 
+    # screen_width = 800
+    # screen_height = 600
+
+    screen_center_x = screen_width // 2
+    screen_center_y = screen_height // 2
+
     # Create the simulator
-    simulator = Simulator(screen_width, screen_height, 0.05, save_gif=True, gif_name='solar_system_simulation.gif')
+    simulator = Simulator(screen_width, screen_height, 0.05, save_gif=True, gif_name='buggy_animation.gif')
 
-    # Normalized distances of planets to the sun (example values)
-    normalized_distances = [0.1, 0.1, 0.1, 0.1, 0.2, 0.1, 0.1, 0.1]
+    # distances of planets to the sun (example values)
+    solar_distances = [31, 31, 31, 31, 62, 31, 31, 31]
 
-    # Compute the orbit radii based on the normalized distances
-    orbit_radius = compute_orbit_radius(screen_height, normalized_distances)
+    # Compute the initial position of each planet
+    init_positions = compute_init_positions(screen_height, screen_width, solar_distances)
 
     size_divider = 1.3
 
@@ -248,14 +317,15 @@ if __name__ == "__main__":
     speed_multiplier = 50
 
     for i, (planet_id, angle_speed, radius) in enumerate(planet_params):
+        init_pos = init_positions[i]
         planet = CircularParticle(
             planet_id,
-            screen_width // 2 + orbit_radius[i],
-            screen_height // 2,
+            init_pos[0],
+            init_pos[1],
             radius // size_divider,
-            screen_width // 2,
-            screen_height // 2,
-            orbit_radius[i],
+            screen_center_x,
+            screen_center_y,
+            init_pos[0] - screen_center_x,
             angle_speed * speed_multiplier,
             'circle'
         )

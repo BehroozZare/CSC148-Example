@@ -6,7 +6,7 @@
 
 This practice is complementary material for section 1.3 (The Function Design Recipe) of the CSC148 course presented at UofT. Here, we want to see the process of writing a function that will be used in this beautiful circular solar system with weird distances between planets! Here's what we are asked to do:
 
-> Assume that the planets start moving around the sun from the horizontal line on the right of the sun that goes through the middle of the screen. Given the distances between planets and the screen size, return the x and y coordinates of the starting position of each planet. As an example, assume the following given distances between planets in million KM: [31, 31, 31, 62, 31, 31, 31], which produces the above animation. Note that the distance between the sun and the closest planet is also 31 million KM. Return the (x,y) coordinates for each planet.
+> Assume that the planets start moving around the sun from the horizontal line on the right of the sun that goes through the middle of the screen. Given the distances between planets and the screen size, return the x and y coordinates of the starting position of each planet. As an example, assume the following given distances between planets in million KM: `[31, 31, 31, 31, 62, 31, 31, 31]`, which produces the above animation. Note that the distance between the sun and the closest planet is the first entry which is 31 million KM. Return the (x,y) coordinates for each planet.
 
 Before we start writing a program, we often have a vague idea, such as the one above, of what we want to write. Programming languages are just tools for us to lay down our thoughts. However, they have limited capabilities, and we need to simplify our thought process to be able to implement them.
 
@@ -38,4 +38,4 @@ The 603 is more than 67 because the actual number is 66.6667. This is something 
 2. We use this distance and the screen size to scale the distances proportionally to the screen.
 3. Since the coordinates are on the horizontal line in the middle of the screen, the height is zero and the x-values are computed based on the distance of each planet to the sun.
 
-Let's go to the [Implementation](../Implementation/step_by_step_implementation.md) section!
+Let's go to the [Implementation](../Implementation/README.md) section!
