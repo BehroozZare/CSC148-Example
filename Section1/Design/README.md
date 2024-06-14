@@ -4,21 +4,21 @@
 
 ## Objective
 
-This practice is complementary material for section 1.3 (The Function Design Recipe) of the CSC148 course presented at UofT. Here, we want to see the process of writing a function that will be used in this beautiful circular solar system with unique distances between planets! Here's what we are asked to do:
+This practice is complementary material for section 1.3 (The Function Design Recipe) of the CSC148 course presented at UofT. Here, we want to see the process of writing a function that will be used in this beautiful circular solar system with weird distances between planets! Here's what we are asked to do:
 
 > Assume that the planets start moving around the sun from the horizontal line on the right of the sun that goes through the middle of the screen. Given the distances between planets and the screen size, return the x and y coordinates of the starting position of each planet. As an example, assume the following given distances between planets in million KM: [31, 31, 31, 62, 31, 31, 31], which produces the above animation. Note that the distance between the sun and the closest planet is also 31 million KM. Return the (x,y) coordinates for each planet.
 
 Before we start writing a program, we often have a vague idea, such as the one above, of what we want to write. Programming languages are just tools for us to lay down our thoughts. However, they have limited capabilities, and we need to simplify our thought process to be able to implement them.
 
-Let's get back to our problem. We have some distances between planets. What is the objective? What are the inputs? What are the expected outputs? We have some distances! Let's use pen and paper to understand what these distances represent. The question mentions a horizontal line that goes through the middle of the screen and planets start moving from there. Imagining a really big screen, the distance between each planet is given. So we can draw something like the sketch below.
+Let's get back to our problem. We have some distances between planets. What is the objective? What are the inputs? What are the expected outputs? Let's use pen and paper to understand what these distances represent. The question mentions a horizontal line that goes through the middle of the screen and planets start moving from there. Imagining a really big screen, the distance between each planet is given. So we can draw something like the sketch below.
 
 ![Figure Sketch](sketch1.jpeg)
 
-So now we have some intuition about what these distances are. Assuming the really big screen is equal to the solar system, what would be the current output coordinates?
+Now we have some intuition about what these distances are. Assuming the really big screen is equal to the solar system, what would be the current output coordinates?
 
 ![Figure Sketch](sketch2.jpeg)
 
-Ok, so far we know the coordinates of the starting points if we have the big screen! But we have a limited screen size! Looking at the animation above, we don't have a very big screen. For example, if the height of the screen is 600 pixels, what would be the proportional distances between planets? First, we can observe that we have the big screen size! It is 279 million KM, computed by summing up all the distances! Now in our computer, the furthest planet would be 600 pixels away from the sun! So we need to convert these distances to our screen size! Let's use some math!
+Here, we assume that the Sun is in (0,0) coordinate, then, the height (y) in the horizental line is zero. So far we know the coordinates of the starting points if we have the big screen! But we have a limited screen size! For example, if the height of the screen is 600 pixels, what would be the proportional distances between planets? It is 279 million KM, computed by summing up all the distances! Now in our computer, the furthest planet would be 600 pixels away from the sun! So we need to convert these distances to our screen size! Let's use some math!
 
 $$
 \frac{279}{600} = \frac{31}{x} \rightarrow \frac{600 \times 31}{279} \approx 67
