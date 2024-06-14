@@ -1,4 +1,4 @@
-![Solar System Simulation](solar_system_simulation.gif)
+![Solar System Simulation](Figures/solar_system_simulation.gif)
 
 # Designing a Function for a Circular Solar System Simulation
 
@@ -12,11 +12,11 @@ Before we start writing a program, we often have a vague idea, such as the one a
 
 Let's get back to our problem. We have some distances between planets. What is the objective? What are the inputs? What are the expected outputs? Let's use pen and paper to understand what these distances represent. The question mentions a horizontal line that goes through the middle of the screen and planets start moving from there. Imagining a really big screen, the distance between each planet is given. So we can draw something like the sketch below.
 
-![Figure Sketch](sketch1.jpeg)
+![Figure Sketch](Figures/sketch1.jpeg)
 
 Now we have some intuition about what these distances are. Assuming the really big screen is equal to the solar system, what would be the current output coordinates?
 
-![Figure Sketch](sketch2.jpeg)
+![Figure Sketch](Figures/sketch2.jpeg)
 
 Here, we assume that the Sun is in (0,0) coordinate, then, the height (y) in the horizental line is zero. So far we know the coordinates of the starting points if we have the big screen! But we have a limited screen size! For example, if the height of the screen is 600 pixels, what would be the proportional distances between planets? It is 279 million KM, computed by summing up all the distances! Now in our computer, the furthest planet would be 600 pixels away from the sun! So we need to convert these distances to our screen size! Let's use some math!
 
@@ -26,11 +26,11 @@ $$
 
 Then, the distance of 31 million KM in the solar system is around 67 pixels on our screen! So we now have a routine to convert the given distance in million KM to pixels! Now we can rewrite the distances based on our screen size as below:
 
-![Figure Sketch](sketch3.jpeg)
+![Figure Sketch](Figures/sketch3.jpeg)
 
 We can now compute the (x,y) coordinates as follows:
 
-![Figure Sketch](sketch4.jpeg)
+![Figure Sketch](Figures/sketch4.jpeg)
 
 The 603 is more than 67 because the actual number is 66.6667. This is something that we should keep in mind for coding. If we want to approximate, we should ensure that we do not violate the screen size. With this simple pen and paper sketching, we now have some idea of how to write the code! To summarize it quickly, we start as follows:
 

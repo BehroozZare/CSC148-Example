@@ -1,4 +1,4 @@
-![Solar System Simulation](solar_system_simulation.gif)
+![Solar System Simulation](Figures/solar_system_simulation.gif)
 
 # Implement a Function for a Circular Solar System Simulation
 
@@ -152,7 +152,7 @@ def compute_init_positions(screen_height: int, screen_width: int, solar_distance
 
 By running the function, we face an error in all red! Welcome to the world of programming! If I wrote a code that worked on the first attempt, I would be really scared because it is very rare to write correct code on the first attempt! I suspect that you will also get this feeling somewhere in your coding journey!
 
-![Figure Sketch](error.png)
+![Figure Sketch](Figures/TupleError.png)
 
 Let's analyze this error. It says `Traceback (most recent call last)`. To understand this line, in high-level explanation, Python runs the code line by line. That is, it consecutively executes the lines that you have written. However, when it reaches a function, it will simply jump to that function to execute the function code line by line. Now, the most recent call appears last. So, it means that the route or lines that Python started to execute to reach this error is as follows: in line 296 of my code, it calls the function that we have written so far.
 
@@ -181,23 +181,23 @@ This error basically says that the `append` function has a single input, but I a
 
 Let's run the code and enjoy our solar system!
 
-![Solar System Simulation](buggy_animation_1.gif)
+![Solar System Simulation](Figures/buggy_animation_1.gif)
 
 Well ... we now face another hard truth! While at the beginning of the coding journey, the red lines errors are hard to solve, by gaining experience, they become easier and easier to solve. However, the type of bug that comes from our understanding of the problems will stay with us, and learning to refine our understanding and redesigning the process, which results in solving the bug (and possibly adding other bugs), will create a great programmer out of us! As a result, coding is an iterative process!
 
-![Programming Process](CodingLoop.jpeg)
+![Programming Process](Figures/CodingLoop.jpeg)
 
 I think it is kind of like how humans learn to interact with their surroundings! Anyway, let's understand the problem better! Let's first not doubt our understanding and make sure that the code is doing what we want it to do!
 
 Let's start with the example that we have already written! In the course note, there are systematic ways of doing it, which I encourage you to use as it will be more helpful in the long run. But, in here, I like to keep things as simple as possible. So let's first use the doctest to run the function with the example that we have written!
 
-![alt text](DoctestExample.png)
+![alt text](Figures/DoctestExample.png)
 
 and ..
 
-![alt text](image.png)
+![alt text](Figures/image.png)
 
-Well, at first glance it is a red error! But, looking closer to the problem, it seems that our function is not providing any bad error. The "Expected" values and the "Got" are not different! But why this error? Remember that programming languages are not smart! So, maybe the string in Expected and Got are not the same! So I changed the doctest to this:
+Well, at first glance it is a red error! But, looking closer to the problem, it seems that our function is not providing any bad problem. The "Expected" values and the "Got" are not different! But why this error? Remember that programming languages are not smart! So, maybe the string in Expected and Got are not the same! So I changed the doctest to this:
 
 ```Python
 def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
@@ -207,4 +207,4 @@ def compute_init_positions(screen_height: int, screen_width: int, solar_distance
     """
 ```
 
-And it did fix the code! So next time that I am writing a doctest, I will make sure that the strings are the same! So at least for our example, the code is working. But maybe it is just true for this example, 
+And it did fix the code! So next time that I am writing a doctest, I will make sure that the strings are the same! So at least for our example, the code is working. But maybe it is just true for this example, what about the input that is given to the function? Let’s run the code and perform the basic way of debugging— Let's use ```print``` function and use the variables and see what's happening step-by-step!
