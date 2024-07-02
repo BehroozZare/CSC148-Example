@@ -256,3 +256,81 @@ initial positions [(80.0, 0), (160.0, 0), (240.0, 0), (320.0, 0), (480.0, 0), (5
 ```
 
 The first two lines of printing are what we expected. For the third line, we can see that the output of 80 is actually a rounding of 79.98! While it seems okay for this example, we should keep in mind that it can produce bugs for other inputs as we saw in our [Design Section](../Design/README.md). But that's a fight for another day! For now, the output of our simulator is way off, and the initial positions are not violating the screen size. So basically, the function works based on our intention! This only means one thing: we need to refine our understanding of the problem as our design itself has a problem!
+
+Before evaluating our assumption and our solution to the problem, note how printing this many variables can be a bit hard! Especially for a relatively small function, we needed to add this many prints. To make our lives easier, we can use debuggers to see the variables. For basic use, we can mark a line of code (with the mouse, click on a line that you are interested in) as a place where the code stops and waits for our command to proceed. Then, at that point, we can see the variables that we want, without the use of prints! For example, I add the following marks or breakpoints and see how variables change.
+
+![alt text](Figures/BreakPoints.png)
+
+Note that based on the reasoning that we used for adding the print functions, I added a break point just before where we wanted to print each variables. Now let's start debugging with the debug button!
+
+![alt text](Figures/DebugButton.png)
+
+We can see that the code stops at the first break point!
+
+![alt text](Figures/FirstBreakPoint.png)
+
+
+All that is left is to see the variables that we are interested in!
+
+![alt text](Figures/DebugOutput1.png)
+
+While we can see screen sizes and solar_distances variable in here. However, we cannot see furthest_planet_distance. This is because that line of code is still not executed. So that variable is still not created.  In this scenario, we can just ask debugger to execute the code one line at the time. To do that, we can use the "Step Over" button.
+
+![alt text](Figures/OneStep.png)
+
+And then we have the variable that we want!
+
+![alt text](Figures/VariableCreation.png)
+
+
+Ok, let's get back to our main objective! What was wrong with our underestanding? There are many different ways to approach this problem and refine our understanding. I will explain my approach. However, <span style="color:blue"> feel free to explore different ways of looking at this problem before reading the rest of the text</span>. 
+
+Looking at the simulation, while the function works as we design, the planets are going out of the screen. Which means that something about the distance that we are considering is wrong. Let's use pen and paper (Somewhat!) again.
+
+![alt text](Figures/Frame1.jpeg)
+
+Based on this pen and paper drawing of what we have and how we design our algorithm, we can quickly see that we assume the maximum distance from sun as the screen size. However, it is infact half of this distance! Ok, now we understand the problem a bit better. Let's add this to our code by simply making the screen_size variable to half as below.
+
+```
+screen_size = min(screen_height, screen_width) // 2
+```
+
+Now if we see the animation, it is still off! But, the distance between planets seems to be more accurate!
+
+![Solar System Simulation](Figures/buggy_animation_2.gif)
+
+
+Sure, here's a grammatically improved version of the text:
+
+Ok, what are our other options? At this point, we have limited knowledge of how the output of our function is used to position the planets around the sun. So, the first thing we can do is watch the simulation and identify other inaccuracies. We need to be more specific about what is wrong with this simulation. Here is what I observe:
+
+1. The first orbit is too big!
+2. The planets are still going off the screen!
+3. The starting point for each planet is somewhere at the top of the screen!
+4. The fifth planet (Jupiter) is the biggest one around the sun, but it is the fourth one here!
+
+Based on these observations, I will start with the one I believe is quickest to check, which is number "3." Now, you may choose any other option as the starting point. That's also fine! Often, problems are interconnected, and fixing one can result in fixing others.
+
+Let's debug number 3! Why do the planets start from the top when we set y = 0? Basically, we assume that the horizontal line that goes through the middle of the screen is y = 0, like in our conventional coordinate system as shown below.
+
+![alt text](Figures/Coordinate.jpeg)
+
+
+It seems that our understanding of `y = 0` is incorrect. The top of the screen seems to be `y = 0`. Then, what about `x = 0`? I can think of two ways to refine my understanding of this coordinate system. First, since we are using Pygame for the simulation, I can search for the coordinate documentation on Google. Here is my Google search!
+
+![alt text](Figures/google.png)
+
+Alternatively, you can simply return the (x, y) coordinates for every planet as (0, 0) to see where all the planets start moving. Both methods are fine. So, how can we fix our code? It seems we need to position all our planets based on the new coordinate system. That is, `y = 0` when the (0, 0) point is in the middle, will become `y = screen_height // 2`. Similarly, `x = 0` is actually `x = screen_width // 2`. Let's update our code accordingly:
+
+```
+init_pos.append((distance_to_sun_in_screen + screen_width // 2, screen_height // 2))
+```
+
+Now let's see the output!
+
+
+![alt text](Figures/solution.gif)
+
+Congratulations! You have now successfully completed your task! But, can we share our code with other people working on this simulation project? You are giving them this code, but can they understand it? What if they want to use your code in another coordinate system instead of Pygame? That is why it is always important to document your code so that others know how to use it! There are many ways to document code, but each organization or group of people often uses specific rules to be consistent and reduce ambiguity. In this course, we use PEP-8 standard and PyTA module for cheking whether we are complying to PEP-8 standards as well as given instructions for documenting our code! Let's update our code with appropriate documentation using [PyTA](../PyTA/README.md)!
+
+
