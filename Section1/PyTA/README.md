@@ -1,1 +1,3 @@
-Hello World!
+![alt text](Figures/Headers.png)
+
+In this part of the practice, we quickly go over the errors we encountered when using PyTA. The objective of this practice is to familiarize you with PyTA and some approaches to solving the errors you may face during the documentation of your code. Compared to the previous section, where we dealt with syntax and logical errors, this part is much more straightforward (most of the time).
