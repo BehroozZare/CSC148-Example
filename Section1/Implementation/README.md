@@ -320,7 +320,11 @@ It seems that our understanding of `y = 0` is incorrect. The top of the screen s
 
 ![alt text](Figures/google.png)
 
-Alternatively, you can simply return the (x, y) coordinates for every planet as (0, 0) to see where all the planets start moving. Both methods are fine. So, how can we fix our code? It seems we need to position all our planets based on the new coordinate system. That is, `y = 0` when the (0, 0) point is in the middle, will become `y = screen_height // 2`. Similarly, `x = 0` is actually `x = screen_width // 2`. Let's update our code accordingly:
+Alternatively, you can simply return the (x, y) coordinates for every planet as (0, 0) to see where all the planets start moving. Both methods are fine. So, how can we fix our code? Let's see the coordinate system that PyGame is using!
+
+![alt text](Figures/NewCoordinate.jpeg)
+
+So, we need to position all our planets based on the new coordinate system. That is, `y = 0` when the (0, 0) point is in the middle, will become `y = screen_height // 2`. Similarly, `x = 0` is actually `x = screen_width // 2`. Let's update our code accordingly:
 
 ```
 init_pos.append((distance_to_sun_in_screen + screen_width // 2, screen_height // 2))

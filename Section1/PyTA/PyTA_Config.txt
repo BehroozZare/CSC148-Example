@@ -1,0 +1,2 @@
+[FORBIDDEN IMPORT]
+allowed-import-modules = pygame, sys, math, numpy, imageio, python_ta, check_contracts
