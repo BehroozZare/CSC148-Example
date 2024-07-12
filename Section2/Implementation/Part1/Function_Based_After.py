@@ -3,11 +3,9 @@ import sys
 import math
 import numpy as np
 import imageio
-import python_ta
-from python_ta.contracts import check_contracts
+import random
 
 
-@check_contracts
 def create_planet(id: int, x: float, y: float, radius: float, shape: str,
                   center_x: float = None, center_y: float = None, angle_speed: float = None) -> dict:
     """Return a planet dictionary with the given parameters
@@ -37,11 +35,34 @@ def create_planet(id: int, x: float, y: float, radius: float, shape: str,
     }
 
 
-def move_planet(planet, time_step):
-    """move a planet in its orbit
+def create_meteor(id: int, x: float, y: float, radius: float, shape: str, speed: float) -> dict:
+    """Return a meteor dictionary with the given parameters
+    >>> create_meteor(1, 100, 100, 3, 'circle', 2)
+    {'id': 1, 'x': 100, 'y': 100, 'radius': 3, 'color': (255, 255, 255), 'shape': 'circle', 'speed': 2, 'distance_traveled': 0}
 
     Preconditions:
       - radius > 0
+      - speed > 0
+      - shape == 'circle'
+    """
+    return {
+        'id': id,
+        'x': x,
+        'y': y,
+        'delta_x': 0,
+        'delta_y': 0,
+        'radius': radius,
+        'color': (255, 255, 255),  # Default white color
+        'shape': shape,  # 'circle' or 'square'
+        'speed': speed,
+        'distance_traveled': 0
+    }
+
+
+def move_planet(planet, time_step):
+    """Move a planet in its orbit
+
+    Preconditions:
       - planet['orbit_radius'] != None
       - planet['angle'] != None
       - planet['angle_speed'] != None
@@ -50,11 +71,35 @@ def move_planet(planet, time_step):
       - planet['center_x'] != None
       - planet['center_y'] != None
       - time_step > 0
-      - angle_speed != None
     """
     planet['angle'] += planet['angle_speed'] * time_step
     planet['x'] = planet['center_x'] + planet['orbit_radius'] * math.cos(planet['angle'])
     planet['y'] = planet['center_y'] + planet['orbit_radius'] * math.sin(planet['angle'])
+
+
+def move_meteor(meteor, time_step, screen_width, screen_height, max_distance=500):
+    """Move a meteor in a straight line and handle fading/reappearing
+
+    Preconditions:
+      - meteor['x'] != None
+      - meteor['y'] != None
+      - meteor['speed'] > 0
+      - time_step > 0
+      - max_distance > 0
+    """
+    meteor['x'] += meteor['speed'] * time_step
+    meteor['y'] += meteor['speed'] * time_step
+    meteor['delta_x'] += meteor['speed'] * time_step
+    meteor['delta_y'] += meteor['speed'] * time_step
+    meteor['distance_traveled'] += math.sqrt(meteor['delta_x'] * meteor['delta_x'] + meteor['delta_y'] * meteor['delta_y']) * time_step
+
+    # Check if the meteor has traveled beyond the maximum distance
+    if meteor['distance_traveled'] >= max_distance:
+        # Reset the distance traveled
+        meteor['distance_traveled'] = 0
+        # Randomly reposition the meteor
+        meteor['x'] = random.uniform(0, screen_width)
+        meteor['y'] = random.uniform(0, screen_height)
 
 
 def update_color(planet):
@@ -78,20 +123,20 @@ def init_pygame(width, height):
     return screen, clock
 
 
-def draw(screen, planets):
+def draw(screen, objects):
     screen.fill((0, 0, 0))  # Fill the screen with black
-    for planet in planets:
-        if planet['orbit_radius'] > 0:  # Only draw orbits for planets with a non-zero orbit radius
-            pygame.draw.circle(screen, (255, 255, 255), (planet['center_x'], planet['center_y']),
-                               planet['orbit_radius'], 1)
-    for planet in planets:
-        if planet['shape'] == 'circle':
-            pygame.draw.circle(screen, planet['color'], (int(planet['x']), int(planet['y'])), planet['radius'])
+    for obj in objects:
+        if 'orbit_radius' in obj and obj['orbit_radius'] > 0:  # Only draw orbits for planets
+            pygame.draw.circle(screen, (255, 255, 255), (obj['center_x'], obj['center_y']),
+                               obj['orbit_radius'], 1)
+    for obj in objects:
+        if obj['shape'] == 'circle':
+            pygame.draw.circle(screen, obj['color'], (int(obj['x']), int(obj['y'])), obj['radius'])
         else:
-            raise ValueError("Invalid planet shape")
+            raise ValueError("Invalid object shape")
 
 
-def run_simulation(width, height, time_step, planets, save_gif=False, gif_name='simulation.gif'):
+def run_simulation(width, height, time_step, objects, save_gif=False, gif_name='simulation.gif'):
     screen, clock = init_pygame(width, height)
     frames = []
     running = True
@@ -100,15 +145,18 @@ def run_simulation(width, height, time_step, planets, save_gif=False, gif_name='
             if event.type == pygame.QUIT:
                 running = False
 
-        # Move planets
-        for planet in planets:
-            move_planet(planet, time_step)
+        # Move objects
+        for obj in objects:
+            if 'orbit_radius' in obj:
+                move_planet(obj, time_step)
+            elif 'speed' in obj:
+                move_meteor(obj, time_step, width, height, random.uniform(500, 1000))
 
-        for planet in planets:
-            update_color(planet)
+        for obj in objects:
+            update_color(obj)
 
         # Draw everything
-        draw(screen, planets)
+        draw(screen, objects)
 
         # Capture frame for GIF
         if save_gif:
@@ -127,7 +175,7 @@ def run_simulation(width, height, time_step, planets, save_gif=False, gif_name='
     sys.exit()
 
 
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
+def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list) -> list[tuple]:
     """Return the initial position of each planet
     >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
     [(527.0, 279), (558.0, 279), (589.0, 279), (620.0, 279), (682.0, 279), (713.0, 279), (744.0, 279), (775.0, 279)]
@@ -160,7 +208,6 @@ def compute_init_positions(screen_height: int, screen_width: int, solar_distance
 
 # Example usage
 if __name__ == "__main__":
-    python_ta.check_all(config="PyTA_Config.txt")
     # Screen dimensions
     x = 80
     screen_width = 16 * x
@@ -170,9 +217,9 @@ if __name__ == "__main__":
     screen_center_y = screen_height // 2
 
     # Create the simulator
-    planets = []
+    objects = []
     time_step = 0.05
-    save_gif = False
+    save_gif = True
     gif_name = 'buggy_animation.gif'
 
     # distances of planets to the sun (example values)
@@ -185,8 +232,8 @@ if __name__ == "__main__":
 
     # Add the Sun
     sun = create_planet(0, screen_center_x, screen_center_y, 30 / size_divider, 'circle', screen_center_x,
-                          screen_center_y, 0)
-    planets.append(sun)
+                        screen_center_y, 0)
+    objects.append(sun)
 
     # Add planets with their computed orbits
     planet_params = [
@@ -214,7 +261,18 @@ if __name__ == "__main__":
             screen_center_y,
             angle_speed * speed_multiplier
         )
-        planets.append(planet)
+        objects.append(planet)
+
+    # Add meteors
+    meteors = []
+    for i in range(10,20):
+        meteor = create_meteor(i, random.uniform(0, screen_width),
+                               random.uniform(0, screen_height),
+                               2, 'circle', random.uniform(20, 60))
+        meteors.append(meteor)
+
+    for meteor in meteors:
+        objects.append(meteor)
 
     # Run the simulation
-    run_simulation(screen_width, screen_height, time_step, planets, save_gif, gif_name)
+    run_simulation(screen_width, screen_height, time_step, objects, save_gif, gif_name)

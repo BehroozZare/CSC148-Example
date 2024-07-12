@@ -3,25 +3,9 @@ import sys
 import math
 import numpy as np
 import imageio
-import python_ta
-from python_ta.contracts import check_contracts
 
 
-@check_contracts
-def create_planet(id: int, x: float, y: float, radius: float, shape: str,
-                  center_x: float = None, center_y: float = None, angle_speed: float = None) -> dict:
-    """Return a planet dictionary with the given parameters
-    >>> create_planet(0, 4, 4, 30, 'circle', 0, 0, 5)
-    {'id': 0, 'x': 4, 'y': 4, 'radius': 30, 'color': (255, 255, 255), 'shape': 'circle', 'center_x': 0, 'center_y': 0, 'orbit_radius': 5.656854249492381, 'angle': 0.7853981633974483, 'angle_speed': 5}
-
-    Preconditions:
-      - radius > 0
-      - shape == 'circle'
-      - center_x != None
-      - center_y != None
-      - angle_speed != None
-    """
-    orbit_radius = math.sqrt((x - center_x) ** 2 + (y - center_y) ** 2)
+def create_planets(id, x, y, radius, shape, center_x=None, center_y=None, orbit_radius=None, angle_speed=None):
     return {
         'id': id,
         'x': x,
@@ -32,29 +16,16 @@ def create_planet(id: int, x: float, y: float, radius: float, shape: str,
         'center_x': center_x,
         'center_y': center_y,
         'orbit_radius': orbit_radius,
-        'angle': math.atan2(y - center_y, x - center_x),
+        'angle': math.atan2(y - center_y, x - center_x) if center_x is not None and center_y is not None else 0,
         'angle_speed': angle_speed
     }
 
 
 def move_planet(planet, time_step):
-    """move a planet in its orbit
-
-    Preconditions:
-      - radius > 0
-      - planet['orbit_radius'] != None
-      - planet['angle'] != None
-      - planet['angle_speed'] != None
-      - planet['x'] != None
-      - planet['y'] != None
-      - planet['center_x'] != None
-      - planet['center_y'] != None
-      - time_step > 0
-      - angle_speed != None
-    """
-    planet['angle'] += planet['angle_speed'] * time_step
-    planet['x'] = planet['center_x'] + planet['orbit_radius'] * math.cos(planet['angle'])
-    planet['y'] = planet['center_y'] + planet['orbit_radius'] * math.sin(planet['angle'])
+    if planet['orbit_radius'] is not None:
+        planet['angle'] += planet['angle_speed'] * time_step
+        planet['x'] = planet['center_x'] + planet['orbit_radius'] * math.cos(planet['angle'])
+        planet['y'] = planet['center_y'] + planet['orbit_radius'] * math.sin(planet['angle'])
 
 
 def update_color(planet):
@@ -73,6 +44,7 @@ def update_color(planet):
 
 
 def init_pygame(width, height):
+    pygame.init()
     screen = pygame.display.set_mode((width, height))
     clock = pygame.time.Clock()
     return screen, clock
@@ -124,13 +96,14 @@ def run_simulation(width, height, time_step, planets, save_gif=False, gif_name='
     if save_gif:
         imageio.mimsave(gif_name, frames, fps=30, loop=0)
 
+    pygame.quit()
     sys.exit()
 
 
 def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
     """Return the initial position of each planet
     >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
-    [(527.0, 279), (558.0, 279), (589.0, 279), (620.0, 279), (682.0, 279), (713.0, 279), (744.0, 279), (775.0, 279)]
+    [(62.0, 0), (124.0, 0), (186.0, 0), (248.0, 0), (372.0, 0), (434.0, 0), (496.0, 0), (558.0, 0)]
     """
 
     # Check the precondition
@@ -160,7 +133,6 @@ def compute_init_positions(screen_height: int, screen_width: int, solar_distance
 
 # Example usage
 if __name__ == "__main__":
-    python_ta.check_all(config="PyTA_Config.txt")
     # Screen dimensions
     x = 80
     screen_width = 16 * x
@@ -170,10 +142,10 @@ if __name__ == "__main__":
     screen_center_y = screen_height // 2
 
     # Create the simulator
-    planets = []
+    astronomical_objects = []
     time_step = 0.05
-    save_gif = False
-    gif_name = 'buggy_animation.gif'
+    save_gif = True
+    gif_name = 'animation.gif'
 
     # distances of planets to the sun (example values)
     solar_distances = [31, 31, 31, 31, 62, 31, 31, 31]
@@ -184,9 +156,9 @@ if __name__ == "__main__":
     size_divider = 1.3
 
     # Add the Sun
-    sun = create_planet(0, screen_center_x, screen_center_y, 30 / size_divider, 'circle', screen_center_x,
-                          screen_center_y, 0)
-    planets.append(sun)
+    sun = create_planets(0, screen_center_x, screen_center_y, 30 // size_divider, 'circle', screen_center_x,
+                          screen_center_y, 0, 0)
+    astronomical_objects.append(sun)
 
     # Add planets with their computed orbits
     planet_params = [
@@ -204,7 +176,7 @@ if __name__ == "__main__":
 
     for i, (planet_id, angle_speed, radius) in enumerate(planet_params):
         init_pos = init_positions[i]
-        planet = create_planet(
+        planet = create_planets(
             planet_id,
             init_pos[0],
             init_pos[1],
@@ -212,9 +184,10 @@ if __name__ == "__main__":
             'circle',
             screen_center_x,
             screen_center_y,
+            init_pos[0] - screen_center_x,
             angle_speed * speed_multiplier
         )
-        planets.append(planet)
+        astronomical_objects.append(planet)
 
     # Run the simulation
-    run_simulation(screen_width, screen_height, time_step, planets, save_gif, gif_name)
+    run_simulation(screen_width, screen_height, time_step, astronomical_objects, save_gif, gif_name)
