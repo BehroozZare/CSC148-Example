@@ -38,7 +38,7 @@ def create_planet(id: int, x: float, y: float, radius: float, shape: str,
 def create_meteor(id: int, x: float, y: float, radius: float, shape: str, speed: float) -> dict:
     """Return a meteor dictionary with the given parameters
     >>> create_meteor(1, 100, 100, 3, 'circle', 2)
-    {'id': 1, 'x': 100, 'y': 100, 'radius': 3, 'color': (255, 255, 255), 'shape': 'circle', 'speed': 2, 'distance_traveled': 0}
+    {'id': 1, 'x': 100, 'y': 100, 'delta_x': 0, 'delta_y': 0, 'radius': 3, 'color': (255, 255, 255), 'shape': 'circle', 'speed': 2, 'distance_traveled': 0}
 
     Preconditions:
       - radius > 0
@@ -87,11 +87,14 @@ def move_meteor(meteor, time_step, screen_width, screen_height, max_distance=500
       - time_step > 0
       - max_distance > 0
     """
-    meteor['x'] += meteor['speed'] * time_step
-    meteor['y'] += meteor['speed'] * time_step
-    meteor['delta_x'] += meteor['speed'] * time_step
-    meteor['delta_y'] += meteor['speed'] * time_step
-    meteor['distance_traveled'] += math.sqrt(meteor['delta_x'] * meteor['delta_x'] + meteor['delta_y'] * meteor['delta_y']) * time_step
+    x_displacement = meteor['speed'] * time_step
+    y_displacement = meteor['speed'] * time_step
+    meteor['x'] += x_displacement
+    meteor['y'] += y_displacement
+    meteor['delta_x'] += x_displacement
+    meteor['delta_y'] += y_displacement
+    meteor['distance_traveled'] += math.sqrt(
+        meteor['delta_x'] * meteor['delta_x'] + meteor['delta_y'] * meteor['delta_y']) * time_step
 
     # Check if the meteor has traveled beyond the maximum distance
     if meteor['distance_traveled'] >= max_distance:
@@ -217,7 +220,7 @@ if __name__ == "__main__":
     screen_center_y = screen_height // 2
 
     # Create the simulator
-    objects = []
+    astronomical_objects = []
     time_step = 0.05
     save_gif = True
     gif_name = 'buggy_animation.gif'
@@ -233,7 +236,7 @@ if __name__ == "__main__":
     # Add the Sun
     sun = create_planet(0, screen_center_x, screen_center_y, 30 / size_divider, 'circle', screen_center_x,
                         screen_center_y, 0)
-    objects.append(sun)
+    astronomical_objects.append(sun)
 
     # Add planets with their computed orbits
     planet_params = [
@@ -261,18 +264,14 @@ if __name__ == "__main__":
             screen_center_y,
             angle_speed * speed_multiplier
         )
-        objects.append(planet)
+        astronomical_objects.append(planet)
 
     # Add meteors
-    meteors = []
-    for i in range(10,20):
-        meteor = create_meteor(i, random.uniform(0, screen_width),
+    for id in range(10, 20):
+        meteor = create_meteor(id, random.uniform(0, screen_width),
                                random.uniform(0, screen_height),
                                2, 'circle', random.uniform(20, 60))
-        meteors.append(meteor)
-
-    for meteor in meteors:
-        objects.append(meteor)
+        astronomical_objects.append(meteor)
 
     # Run the simulation
-    run_simulation(screen_width, screen_height, time_step, objects, save_gif, gif_name)
+    run_simulation(screen_width, screen_height, time_step, astronomical_objects, save_gif, gif_name)
