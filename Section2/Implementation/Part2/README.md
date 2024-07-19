@@ -211,7 +211,7 @@ While ```move``` method from ```AstronomicalBody``` class is called for each obj
 
 In ```draw``` method we can also see the same reasoning. However, due to the requirement of seeing the trail of ```Planet``` objects, the simulator code has a routin for this specific objects which shows that collaboration between developers are someties necessary.
 
-Now as an exercise and using the code bases that we have so far, see whether you can create a particle simulator like below. This exercise will show you the reusibility of the class based code that we have compared to the function based code! The solution for this exercise is in here. But, I strongly suggest you to try to do it yourself as you have all the necessary knowledge to develop this. Enjoy!
+Now as an exercise and using the code bases that we have so far, see whether you can create a particle simulator like below. This exercise will show you the reusibility of the class based code that we have compared to the function based code! The solution for this exercise is in [here](Exercise_Solution/particle_simulator.py). But, I strongly suggest you to try to do it yourself as you have all the necessary knowledge to develop this. Enjoy!
 
 ![simulation](Figures/particle_simulation.gif)
 
