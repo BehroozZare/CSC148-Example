@@ -4,7 +4,7 @@
 
 ## Objective
 
-For this section, we want to understand the structure of the given simulator code and then integrate the meteor into the code. Note that we do not need to understand every detail about the code that is given to us to work with. We first need to build a mental image of how the developers of the code thought about the process. When we have some abstract view, we can then think about ways to actually change the underlying code and expand it effectively. For the following read, I suggest to have the code [Simulator File](Function_Based_Before.py) also opened for easier read.
+For this section, we need to understand the structure of the given simulator code to be able to integrate the meteor into the code. Note that we do not need to understand every detail about the code that is given to us to work with. We first need to build a mental image of how the developers of the code thought about the process. When we have some abstract view, we can then think about ways to actually change the underlying code and expand it effectively. For the following read, I suggest to have the code [Simulator File](Function_Based_Before.py) also opened for easier read.
 
 The way that I approach any unfamiliar code base, is to find the starting point! Looking at the ```if __name__ == "__main__":``` part of the [Simulator File](Function_Based_Before.py), we can quickly see where the procedure is going to start. Let's analyze this procedure together and think about how the developers of this code think about their simulator.
 

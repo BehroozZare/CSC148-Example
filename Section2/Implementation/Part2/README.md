@@ -1,340 +1,220 @@
-![Solar System Simulation](Figures/solar_system_simulation.gif)
+![Solar System Simulation](../Figures/PlanetWithMeteor.gif)
 
-# Implement a Function for a Circular Solar System Simulation
+# Expanding Solar System - Part 2!
 
 ## Objective
 
-Now that we've sketched a simple process for solving the problem defined in the [Design Section](../Design/README.md), we need to start converting those thoughts into code! Let's follow the step-by-step guide provided in the course notes.
+To understand the benfits of object oriented programming. We will go through the same process of integrating our meteor code into the simulator. But this time, the simulator is given to us as set of classes. The [Simulator File](Class_Based_Before.py) contains the whole simulator with set of 3 classes. Due to the use of class, we are asked to add the meteor feature same as the one explained in [Design](../../Design/README.md) but with following implementation restriction. 
 
-### Step 1: Write Example Uses
-We have already gone through the process in the [Design Section](../Design/README.md)! To have a simpler output instead of (66.6667, 0), we can consider the screen size to be 558 instead of 600 pixels so $558 \div 279 = 2$. Then we can simply multiply each of the distances by 2! This will turn the output to `[(62,0),(124,0),(186,0),(248,0),(372,0),(434,0),(496,0), (558,0)]`. 
+> To impelement the meteor feature to the simulation, please instantiate a class from ```AstronomicalBodies``` base class an implement the required methods.
 
-### Step 2: Write the Function Header
-
-Since we are not writing the function from scratch and we want to see the effect of our code in the solar system simulator, the function recipe is given to us!
+Let's first see the ```AstronomicalBodies``` class. Note that because of the documentation in the class description, variables and methods objectives are self explanotary. However, if it is not sufficient, please review the [Part 1](../Part1/README.md).
 
 ```python
-def compute_init_positions(screen_height, screen_width, solar_distances):
+class AstronomicalBody:
+    def __init__(self, id: int, x: float, y: float, radius: float, type: str):
+        self.id = id  # body identifier
+        self.x = x  # x position in 2D space
+        self.y = y  # y position in 2D space
+        self.radius = radius  # the radius of the body (assuming it's a circle)
+        self.color = (255, 255, 255)  # Default white color
+        self.type = type  # 'planet', star, etc
+
+    def move(self, time_step):
+        """
+        Move the body in the 2D space
+        """
+        ValueError("This method should be implemented in the subclass", self.get_type())
+
+    def get_color(self):
+        """
+        Get the color of the body
+        """
+        return self.color
+
+    def get_type(self):
+        """
+        Get the type of the body
+        """
+        return self.type
 ```
 
-Seeing the function definition, we face the first problem. While we know what `solar_distances` is, instead of a single size for the screen, we have two sizes! This means that we did not consider that the screen is not square. Let's look back at our simulator above! We see that the last planet's distance is constrained by the height of the screen. So should we consider only the `screen_height` parameter? What if the width was smaller? Can we make our code more general with a small effort? Well, we can assume the screen size parameter in the [Design Section](../Design/README.md) as the minimum of the two sizes! So our screen size is now:
+Let's also visit the ```if __name__ == "__main__":``` part of the code.
+```python
+if __name__ == "__main__":
+    x = 80
+    screen_width = 16 * x
+    screen_height = 9 * x
+
+    screen_center_x = screen_width // 2
+    screen_center_y = screen_height // 2
+
+    astronomical_objects = []
+    time_step = 0.05
+    save_gif = True
+    gif_name = 'animation.gif'
+
+    solar_distances = [31, 31, 31, 31, 62, 31, 31, 31]
+    init_positions = compute_init_positions(screen_height, screen_width, solar_distances)
+
+    size_divider = 1.3
+
+    sun = Star(0, screen_center_x, screen_center_y, 30 // size_divider, 'star')
+    astronomical_objects.append(sun)
+
+    planet_params = [
+        (0, 0.02, 5),  # Mercury
+        (1, 0.015, 7),  # Venus
+        (2, 0.01, 8),  # Earth
+        (3, 0.008, 6),  # Mars
+        (4, 0.005, 12),  # Jupiter
+        (5, 0.004, 10),  # Saturn
+        (6, 0.003, 9),  # Uranus
+        (7, 0.002, 8)  # Neptune
+    ]
+
+    speed_multiplier = 50
+
+    for i, (planet_id, angle_speed, radius) in enumerate(planet_params):
+        init_pos = init_positions[i]
+        planet = Planet(
+            planet_id,
+            init_pos[0],
+            init_pos[1],
+            radius // size_divider,
+            'planet',
+            screen_center_x,
+            screen_center_y,
+            init_pos[0] - screen_center_x,
+            angle_speed * speed_multiplier
+        )
+        astronomical_objects.append(planet)
+
+    simulator = Simulator(screen_width, screen_height, time_step, astronomical_objects, save_gif, gif_name)
+    simulator.run()
+```
+Everything is pretty much the same. As planets and sun objects are added to astronomical_objects list, we also need to add our meteor class (after definition) to this list. Let's just do that.
 
 ```python
-screen_size = min(screen_height, screen_width)
+class Meteor(AstronomicalBody):
+    def __init__(self, id: int, x: float, y: float, radius: float, type: str, speed: float, max_distance: float):
+        super().__init__(id, x, y, radius, type)
+        self.speed = speed
+        self.max_distance = max_distance
+        self.delta_x = 0
+        self.delta_y = 0
+        self.traveled_distance = 0
+
+    def move(self, time_step: float):
+        x_displacement = self.speed * time_step
+        y_displacement = self.speed * time_step
+        self.x += x_displacement
+        self.y += y_displacement
+        self.delta_x += x_displacement
+        self.delta_y += y_displacement
+        self.traveled_distance += math.sqrt(
+            self.delta_x * self.delta_x + self.delta_y * self.delta_y) * time_step
+
+        # Check if the meteor has traveled beyond the maximum distance
+        if self.traveled_distance >= self.max_distance:
+            # Reset the distance traveled
+            self.traveled_distance = 0
+            # Randomly reposition the meteor
+            self.x = random.uniform(0, screen_width)
+            self.y = random.uniform(0, screen_height)
 ```
 
-### Step 3: Write the Function Description
-
-Let's follow the tasks of writing all these things! It is hard! It is boring! But trust me, having comments, input-output checks, etc., in your code will improve your mental health in the long run! Also, embrace this boredom (quoted from [Deep Work](https://www.goodreads.com/book/show/25744928-deep-work))!
+Above is the class that I defined for adding the Meteor. As you can see, it inherits from AstronomicalBody base class and we implement the required method ```move``` with the identical logic that we used for our [function based](../Part1/Function_Based.py) simulator. Let's add this to the ```astronomical_objects``` list.
 
 ```python
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
-    """Return the initial position of each planet
-    >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
-    [(62,0),(124,0),(186,0),(248,0),(372,0),(434,0),(496,0), (558,0)]
-    """
+# Add meteors
+for id in range(0, 10):
+    meteor = Meteor(id, random.uniform(0, screen_width),
+                    random.uniform(0, screen_height),
+                    2, 'Meteor', random.uniform(20, 60), random.uniform(500, 1000))
+    astronomical_objects.append(meteor)
 ```
 
-### Step 4: Implement the Function Body
+Here, I also didn't want to hack how the color of meteor is going to be set with id, so I start with 0 to 10 ids for the meteors. Now without knowing the simulator code base, let's run this code with the added ```Meteor``` class. 
 
-Ok, let's get real! Based on the [Design Section](../Design/README.md), the first step is:
+![simulation](Figures/ClassBasedResults.gif)
 
-> 1. We compute the maximum distance between the furthest planet and the sun.
+Well, it works! Let's pause for a moment and enjoy the cleanness of this procedure! 
 
-Let's code this part:
+Ok, so let's get back and analyze why it is so good! First, note that the base class informed us of necessary variables and methods that we should define! So no more guessing! We don't need to read and understand simulator code base and add our personal preferences to different parts of the code. Also, note that our collaborator can also focus on coding their "Comet" object without worrying about the design decisions that we are making. 
+
+
+Reading [Part 1](../Part1/README.md) and current part, we can also see how the developers of simulator code base thought about ```AstronomicalBody``` base class and simulator class. However, in practice, if we want to add feature to different part of the code, a collaboration between developers is necessary as adding some features may require adding new codes to other classes. For example, the planet is the only object in here that its path is shown by a line which shows that the developer of planet needed to discuss this feature with the developer of simulator class. 
+
+For completeness, let's also see how the simulator class works!
 
 ```python
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
-    """Return the initial position of each planet
-    >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
-    [(62,0),(124,0),(186,0),(248,0),(372,0),(434,0),(496,0), (558,0)]
-    """
-    # Check the precondition
-    assert solar_distances != []  
-    assert screen_height != 0
-    assert screen_width != 0
+class Simulator:
+    def __init__(self, width, height, time_step, astronomical_bodies, save_gif=False, gif_name='simulation.gif'):
+        self.width = width
+        self.height = height
+        self.time_step = time_step
+        self.astronomical_bodies = astronomical_bodies
+        self.save_gif = save_gif
+        self.gif_name = gif_name
+        self.frames = []
 
-    # Compute the distance between the sun and the last planet
-    furthest_planet_distance = sum(solar_distances)
+    def init_pygame(self):
+        pygame.init()
+        self.screen = pygame.display.set_mode((self.width, self.height))
+        self.clock = pygame.time.Clock()
+
+    def draw(self):
+        self.screen.fill((0, 0, 0))  # Fill the screen with black
+        for body in self.astronomical_bodies:
+            if body.get_type() == 'planet':
+                pygame.draw.circle(self.screen, (255, 255, 255), (body.center_x, body.center_y),
+                                   body.orbit_radius, 1)
+
+            pygame.draw.circle(self.screen, body.get_color(), (int(body.x), int(body.y)), body.radius)
+
+    def run(self):
+        self.init_pygame()
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+
+            for body in self.astronomical_bodies:
+                body.move(self.time_step)
+
+            self.draw()
+
+            if self.save_gif:
+                frame = pygame.surfarray.array3d(self.screen)
+                frame = np.transpose(frame, (1, 0, 2))
+                self.frames.append(frame)
+
+            pygame.display.flip()
+            self.clock.tick(60)
+
+        if self.save_gif:
+            imageio.mimsave(self.gif_name, self.frames, fps=30, loop=0)
+
+        pygame.quit()
+        sys.exit()
 ```
 
-In this example, we use the `sum` function to compute the total distance between the sun and the last planet. This simplifies the code and avoids the manual loop.
-
-Now in this part, I chose to make the function fail when the screen is not defined properly or the distances are not given. However, when you design your code, you can choose the behavior of your function in these cases and write code to handle these appropriately. 
-
-Let's move on to the next step mentioned in the [Design Section](../Design/README.md):
-
-> 2. We use this distance and the screen size to scale the distances proportionally to the screen.
-
-How can we code this? We have already seen the math as below:
-
-$$
-\frac{279}{600} = \frac{31}{x} \rightarrow \frac{600 \times 31}{279} \approx 67
-$$
-
-What are these values in our code? The 279 is already computed in the variable `furthest_planet_distance`. What is 600? It is the screen size. However, at that time our understanding of the problem was not complete as the screen is not square. So now the variable that defines 600 is `screen_size` mentioned in [Step 2](#step-2-write-the-function-header). What is 31? Well, it is one of the distances derived from the `solar_distances` list. So we are basically doing this for each entry in `solar_distances` to compute the proportional distance:
-
-$$
- \frac{screen\_size}{furthest\_planet\_distance} \times solar\_distances[i] 
-$$
-
-Let's add this to the code!
+The reasoning behind ```run``` method is the same is ```run_simulation``` method. We can also see that we have all the simulation specific variables in the ```Simulator``` class which makes the code more structured. Now the moving part of the reasoning is simply as below:
 
 ```python
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
-    """Return the initial position of each planet
-    >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
-    [(62,0),(124,0),(186,0),(248,0),(372,0),(434,0),(496,0), (558,0)]
-    """
-
-    # Check the precondition
-    assert solar_distances != []
-    assert screen_height != 0
-    assert screen_width != 0
-
-    # Compute the distance between the sun and the last planet
-    furthest_planet_distance = sum(solar_distances)
-
-    # Compute the screen size
-    screen_size = min(screen_height, screen_width)
-
-    # Compute the scaling factor
-    scaling_factor = screen_size / furthest_planet_distance
-    screen_distances = [distance * scaling_factor for distance in solar_distances]
+for body in self.astronomical_bodies:
+    body.move(self.time_step)
 ```
+While ```move``` method from ```AstronomicalBody``` class is called for each object, depending on the type of the objects (star, meteor, planet), the specific move method will be called. This will allow for different objects have their own way of moving, but same interface for calling the ```move``` method.
 
-Now we are reaching the final step of our first design outline, which is:
+In ```draw``` method we can also see the same reasoning. However, due to the requirement of seeing the trail of ```Planet``` objects, the simulator code has a routin for this specific objects which shows that collaboration between developers are someties necessary.
 
-> 3. Since the coordinates are on the horizontal line in the middle of the screen, the height is zero and the x-values are computed based on the distance of each planet to the sun.
+Now as an exercise and using the code bases that we have so far, see whether you can create a particle simulator like below. This exercise will show you the reusibility of the class based code that we have compared to the function based code! The solution for this exercise is in here. But, I strongly suggest you to try to do it yourself as you have all the necessary knowledge to develop this. Enjoy!
 
-Let's implement this! 
+![simulation](Figures/particle_simulation.gif)
 
-```python
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
-    """Return the initial position of each planet
-    >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
-    [(62,0),(124,0),(186,0),(248,0),(372,0),(434,0),(496,0), (558,0)]
-    """
-
-    # Check the precondition
-    assert solar_distances != []
-    assert screen_height != 0
-    assert screen_width != 0
-
-    # Compute the distance between the sun and the last planet
-    furthest_planet_distance = sum(solar_distances)
-
-    # Compute the screen size
-    screen_size = min(screen_height, screen_width)
-
-    # Compute the scaling factor
-    scaling_factor = screen_size / furthest_planet_distance
-    screen_distances = [distance * scaling_factor for distance in solar_distances]
-
-    # Compute the distance between each planet and sun (the center)
-    distance_to_sun_in_screen = 0
-    init_pos = []
-    for s_dist in screen_distances:
-        distance_to_sun_in_screen += s_dist
-        init_pos.append(distance_to_sun_in_screen, 0)
-
-        assert distance_to_sun_in_screen <= screen_size
-    
-    return init_pos
-```
-
-We save the distance to the sun in the `distance_to_sun_in_screen` variable like what we sketched with pen and paper in the [Design Section](../Design/README.md). The y-axis should be zero as the sun is the center. So the `x = distance_to_sun_in_screen` and the `y = 0` and for each planet, we append this coordinate into the `init_pos` variable. Note that we also put an assert to make sure that the 'distance_to_sun_in_screen' is not violating the basic rule that we saw in [Design Section](../Design/README.md). That is, no planet should be out of the screen! Let's copy this code into [simulate.py](simulate.py) and replace the empty function.
-
-```python
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
-    pass
-```
-
-By running the function, we face an error in all red! Welcome to the world of programming! If I wrote a code that worked on the first attempt, I would be really scared because it is very rare to write correct code on the first attempt! I suspect that you will also get this feeling somewhere in your coding journey!
-
-![Figure Sketch](Figures/TupleError.png)
-
-Let's analyze this error. It says `Traceback (most recent call last)`. To understand this line, in high-level explanation, Python runs the code line by line. That is, it consecutively executes the lines that you have written. However, when it reaches a function, it will simply jump to that function to execute the function code line by line. Now, the most recent call appears last. So, it means that the route or lines that Python started to execute to reach this error is as follows: in line 296 of my code, it calls the function that we have written so far.
-
-```python
-# Compute the initial position of each planet
-init_positions = compute_init_positions(screen_height, screen_width, solar_distances)
-```
-
-After starting to run this function, it reaches line 271 (the last blue link in the error message, which is the most recent call).
-
-```python
-        init_pos.append(distance_to_sun_in_screen, 0)
-```
-
-When the Python interpreter (the tool that runs the codes line by line) tries to execute this line, it fails, and the reason is written in the error.
-
-```python
-TypeError: list.append() takes exactly one argument (2 given)
-```
-
-This error basically says that the `append` function has a single input, but I am providing two inputs! Looking at the code, I can see that while I thought I was appending a tuple, it is actually considered as two inputs `distance_to_sun_in_screen` and `0`. So I have to fix this bug by adding parentheses for creating a tuple and then adding it to the `init_pos` list. So the fixed code is:
-
-```python
-        init_pos.append((distance_to_sun_in_screen, 0))
-```
-
-Let's run the code and enjoy our solar system!
-
-![Solar System Simulation](Figures/buggy_animation_1.gif)
-
-Well ... we now face another hard truth! While at the beginning of the coding journey, the red lines errors are hard to solve, by gaining experience, they become easier and easier to solve. However, the type of bug that comes from our understanding of the problems will stay with us, and learning to refine our understanding and redesigning the process, which results in solving the bug (and possibly adding other bugs), will create a great programmer out of us! As a result, coding is an iterative process!
-
-![Programming Process](Figures/CodingLoop.jpeg)
-
-I think it is kind of like how humans learn to interact with their surroundings! Anyway, let's understand the problem better! Let's first not doubt our understanding and make sure that the code is doing what we want it to do!
-
-Let's start with the example that we have already written! In the course note, there are systematic ways of doing it, which I encourage you to use as it will be more helpful in the long run. But, in here, I like to keep things as simple as possible. So let's first use the doctest to run the function with the example that we have written!
-
-![alt text](Figures/DoctestExample.png)
-
-and ..
-
-![alt text](Figures/DoctestError.png)
-
-Well, at first glance it is a red error! But, looking closer to the problem, it seems that our function is not providing any bad problem. The "Expected" values and the "Got" are not different! But why this error? Remember that programming languages are not smart! So, maybe the string in Expected and Got are not the same! So I changed the doctest to this:
-
-```Python
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
-    """Return the intial position of each planet
-    >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
-    [(62.0, 0), (124.0, 0), (186.0, 0), (248.0, 0), (372.0, 0), (434.0, 0), (496.0, 0), (558.0, 0)]
-    """
-```
-
-And it did fix the code! So next time that I am writing a doctest, I will make sure that the strings are the same! So at least for our example, the code is working. But maybe it is just true for this example, what about the input that is given to the function? Let’s run the code and perform the basic way of debugging— Let's use ```print``` function and use the variables and see what's happening step-by-step!
-
-
-```Python
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
-    """Return the initial position of each planet
-    >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
-    [(62.0, 0), (124.0, 0), (186.0, 0), (248.0, 0), (372.0, 0), (434.0, 0), (496.0, 0), (558.0, 0)]
-    """
-
-    # Check the precondition
-    assert solar_distances != []
-    assert screen_height != 0
-    assert screen_width != 0
-
-    # Compute the distance between the sun and the last planet
-    furthest_planet_distance = sum(solar_distances)
-    print("The solar distances are", solar_distances, "- the furthest planet is at", furthest_planet_distance)
-    # Compute the screen size
-    screen_size = min(screen_height, screen_width)
-    print("screen height", screen_height, "- screen width", screen_width,
-          "- screen size", screen_size)
-
-    # Compute the scaling factor
-    scaling_factor = screen_size / furthest_planet_distance
-    screen_distances = [distance * scaling_factor for distance in solar_distances]
-    print("Scaler factor:", scaling_factor, "- screen distances", screen_distances)
-    # Compute the distance between each planet and sun (the center)
-    distance_to_sun_in_screen = 0
-    init_pos = []
-    for s_dist in screen_distances:
-        distance_to_sun_in_screen += s_dist
-        init_pos.append((distance_to_sun_in_screen, 0))
-
-        assert distance_to_sun_in_screen <= screen_size
-
-    print("initial positions", init_pos)
-    return init_pos
-```
-
-I like to see every variables, Let's see the output!
-```
-The solar distances are [31, 31, 31, 31, 62, 31, 31, 31] - the furthest planet is at 279
-screen height 720 - screen width 1280 - screen size 720
-Scaler factor: 2.5806451612903225 - screen distances [80.0, 80.0, 80.0, 80.0, 160.0, 80.0, 80.0, 80.0]
-initial positions [(80.0, 0), (160.0, 0), (240.0, 0), (320.0, 0), (480.0, 0), (560.0, 0), (640.0, 0), (720.0, 0)]
-```
-
-The first two lines of printing are what we expected. For the third line, we can see that the output of 80 is actually a rounding of 79.98! While it seems okay for this example, we should keep in mind that it can produce bugs for other inputs as we saw in our [Design Section](../Design/README.md). But that's a fight for another day! For now, the output of our simulator is way off, and the initial positions are not violating the screen size. So basically, the function works based on our intention! This only means one thing: we need to refine our understanding of the problem as our design itself has a problem!
-
-Before evaluating our assumption and our solution to the problem, note how printing this many variables can be a bit hard! Especially for a relatively small function, we needed to add this many prints. To make our lives easier, we can use debuggers to see the variables. For basic use, we can mark a line of code (with the mouse, click on a line that you are interested in) as a place where the code stops and waits for our command to proceed. Then, at that point, we can see the variables that we want, without the use of prints! For example, I add the following marks or breakpoints and see how variables change.
-
-![alt text](Figures/BreakPoints.png)
-
-Note that based on the reasoning that we used for adding the print functions, I added a break point just before where we wanted to print each variables. Now let's start debugging with the debug button!
-
-![alt text](Figures/DebugButton.png)
-
-We can see that the code stops at the first break point!
-
-![alt text](Figures/FirstBreakPoint.png)
-
-
-All that is left is to see the variables that we are interested in!
-
-![alt text](Figures/DebugOutput1.png)
-
-While we can see screen sizes and solar_distances variable in here. However, we cannot see furthest_planet_distance. This is because that line of code is still not executed. So that variable is still not created.  In this scenario, we can just ask debugger to execute the code one line at the time. To do that, we can use the "Step Over" button.
-
-![alt text](Figures/OneStep.png)
-
-And then we have the variable that we want!
-
-![alt text](Figures/VariableCreation.png)
-
-
-Ok, let's get back to our main objective! What was wrong with our underestanding? There are many different ways to approach this problem and refine our understanding. I will explain my approach. However, <span style="color:blue"> feel free to explore different ways of looking at this problem before reading the rest of the text</span>. 
-
-Looking at the simulation, while the function works as we design, the planets are going out of the screen. Which means that something about the distance that we are considering is wrong. Let's use pen and paper (Somewhat!) again.
-
-![alt text](Figures/Frame1.jpeg)
-
-Based on this pen and paper drawing of what we have and how we design our algorithm, we can quickly see that we assume the maximum distance from sun as the screen size. However, it is infact half of this distance! Ok, now we understand the problem a bit better. Let's add this to our code by simply making the screen_size variable to half as below.
-
-```
-screen_size = min(screen_height, screen_width) // 2
-```
-
-Now if we see the animation, it is still off! But, the distance between planets seems to be more accurate!
-
-![Solar System Simulation](Figures/buggy_animation_2.gif)
-
-
-Sure, here's a grammatically improved version of the text:
-
-Ok, what are our other options? At this point, we have limited knowledge of how the output of our function is used to position the planets around the sun. So, the first thing we can do is watch the simulation and identify other inaccuracies. We need to be more specific about what is wrong with this simulation. Here is what I observe:
-
-1. The first orbit is too big!
-2. The planets are still going off the screen!
-3. The starting point for each planet is somewhere at the top of the screen!
-4. The fifth planet (Jupiter) is the biggest one around the sun, but it is the fourth one here!
-
-Based on these observations, I will start with the one I believe is quickest to check, which is number "3." Now, you may choose any other option as the starting point. That's also fine! Often, problems are interconnected, and fixing one can result in fixing others.
-
-Let's debug number 3! Why do the planets start from the top when we set y = 0? Basically, we assume that the horizontal line that goes through the middle of the screen is y = 0, like in our conventional coordinate system as shown below.
-
-![alt text](Figures/Coordinate.jpeg)
-
-
-It seems that our understanding of `y = 0` is incorrect. The top of the screen seems to be `y = 0`. Then, what about `x = 0`? I can think of two ways to refine my understanding of this coordinate system. First, since we are using Pygame for the simulation, I can search for the coordinate documentation on Google. Here is my Google search!
-
-![alt text](Figures/google.png)
-
-Alternatively, you can simply return the (x, y) coordinates for every planet as (0, 0) to see where all the planets start moving. Both methods are fine. So, how can we fix our code? Let's see the coordinate system that PyGame is using!
-
-![alt text](Figures/NewCoordinate.jpeg)
-
-So, we need to position all our planets based on the new coordinate system. That is, `y = 0` when the (0, 0) point is in the middle, will become `y = screen_height // 2`. Similarly, `x = 0` is actually `x = screen_width // 2`. Let's update our code accordingly:
-
-```
-init_pos.append((distance_to_sun_in_screen + screen_width // 2, screen_height // 2))
-```
-
-Now let's see the output!
-
-
-![alt text](Figures/solution.gif)
-
-Congratulations! You have now successfully completed your task! But, can we share our code with other people working on this simulation project? You are giving them this code, but can they understand it? What if they want to use your code in another coordinate system instead of Pygame? That is why it is always important to document your code so that others know how to use it! There are many ways to document code, but each organization or group of people often uses specific rules to be consistent and reduce ambiguity. In this course, we use PEP-8 standard and PyTA module for cheking whether we are complying to PEP-8 standards as well as given instructions for documenting our code! Let's update our code with appropriate documentation using [PyTA](../PyTA/README.md)!
+Finally note that we just scratched the surface! It is not always true that having objects and class for everything is beneficial. The life is about balance after all! So be careful about the complexity and efficiency of your code when developing.
 
 
