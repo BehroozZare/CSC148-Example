@@ -1,4 +1,10 @@
 
 ![alt text](Design/Figures/solar_system_simulation.gif)
 
-This section is divided into three parts. In the [Design](Design/README.md) part, we introduce the first problem that we want to solve. Then we go determine our approach for solving the problem using pen and paper design. The approximation reading time of this part is 10 minutes. After designing our approach, in [Implementation](Implementation/README.md) part, we will implement our design. In the process, as we are developing the code, we will see the problems that I faced during the implementation and the approaches that I took to solve those problems. The reading time of this part is around 20 minutes. Finally, as this course is designed for CSC148, we aim to provide documentation in the format that is required from us in CSC148 course. We finally check our formatting with [PyTA](https://www.cs.toronto.edu/~david/pyta/usage/quick_start.html) module. The reading time of this part is 10 minutes.
+This section is divided into three parts:
+
+1. **[Design](Design/README.md)**: In this part, we introduce the first problem that we want to solve and determine our approach using pen and paper design. The approximate reading time for this part is 10 minutes.
+
+2. **[Implementation](Implementation/README.md)**: In this part, we implement our design. During the development process, we will encounter various problems and discuss the approaches taken to solve (debug) them. The reading time for this part is around 20 minutes.
+
+3. **[Documentation and Style Check](PyTA/README.md)**: As this course is designed for CSC148, we aim to provide documentation in the required format for the course. We will finally check our formatting using the [PyTA](https://www.cs.toronto.edu/~david/pyta/usage/quick_start.html) module. The reading time for this part is 10 minutes.
