@@ -1,2 +1,3 @@
 [FORBIDDEN IMPORT]
-allowed-import-modules = pygame, sys, math, numpy, imageio, python_ta, check_contracts
+allowed-import-modules = pygame, sys, math, numpy, imageio, python_ta, check_contracts, Clock, Surface, python_ta.contracts, pygame.time, doctest
+disable = too-many-arguments, no-member, missing-module-docstring
