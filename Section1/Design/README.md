@@ -1,4 +1,4 @@
-![Solar System Simulation](Figures/solar_system_simulation.gif)
+![Solar System Simulation](Figures/init_pos.jpg)
 
 # Designing a Function for a Circular Solar System Simulation
 
