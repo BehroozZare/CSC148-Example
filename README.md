@@ -8,4 +8,4 @@ These materials are divided into several sections:
 
 - **[Section 2](Section2)** covers section 3 of the course notes and focuses on object-oriented programming. The main objective of this section is to show readers the advantages of object-oriented programming. While doing this exercise, we also provide an experience of approaching other programmers' code bases, which is a common task in practice.
 
-- **[Section 3](Section3)**
+- **[Section 3](Section3)** covers Section 6 of the course notes, which is about Linked Lists. In this part, we go through the design and implementation of a linked list that will be used in our simple particle simulation. We will see how to create a sorted linked list. This section also provides a solution for the exercise at the end of Section 6.3.
