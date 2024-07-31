@@ -1,6 +1,6 @@
 ![Particle Simulation](../animation.gif)
 
-# Expanding Solar System!
+# LinkedList with Particle Simulation!
 
 ## Objective
 
@@ -81,6 +81,8 @@ As we saw in [Implementation - Part 2](../../Section2/Implementation/Part2/) of 
 
 Let's talk about the methods that this LinkedList performs. Based on the code and task definition, each particle is going to be placed inside a ```_Node``` class as an item using ```append```, resulting in the formation of an ordered linked list. We also need to provide ```get``` and ```pop``` methods. Both ```pop``` and ```get``` return the item inside a node, but ```pop``` removes the corresponding node.
 
-Based on this explanation, let's see what will happen to the linked list if we add three particles with coordinates (0,0), (1,0), and (0,1) to the linked list and then remove them.
+Based on this explanation, let's see what will happen to the linked list if we add three particles with coordinates (0,0), (1,0), and (0,1) to it.
 
 ![Linked List Example](Figures/linkedlist_example.jpeg)
+
+Based on the e
