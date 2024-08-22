@@ -8,10 +8,7 @@ These materials are divided into three sections:
 ![Solar System Simulation](Section1/section1_anim.gif)
 - **[Section 1](Section1) - [Reading Time: 30 minutes]**. This section covers sections 1.3 and 1.4 of the course notes and focuses on designing a function to be used in the simulator above. We go through the entire process of design, implementation, and debugging to familiarize readers with the general experience of a programmer.
 
-<div style="display: flex; justify-content: space-around;">
-    <img src="Section2/section2_anim1.gif" alt="Solar System Simulation" style="width: 48%;">
-    <img src="Section2/section2_anim2.gif" alt="Solar System Simulation" style="width: 48%;">
-</div>
+![Solar System Simulation](Section2/section2_anim1.gif)
 
 - **[Section 2](Section2) - [Reading Time: 40 minutes]**. This section covers section 3 of the course notes and focuses on object-oriented programming. The main objective of this section is to show readers the advantages of object-oriented programming. While doing this exercise, we also provide an experience of approaching other programmers' code bases, which is a common task in practice.
 
