@@ -1,10 +1,10 @@
-![Solar System Simulation](Figures/solar_system_simulation.gif)
+![Solar System Simulation](../section1_anim.gif)
 
 # Implement a Function for a Circular Solar System Simulation
 
 ## Objective
 
-Now that we've sketched a simple process for solving the problem defined in the [Design Section](../Design/README.md), we need to start converting those thoughts into code! Let's follow the step-by-step guide provided in the course notes.
+Now that we've sketched a simple process for solving the problem defined in the [Design Section](../Design/README.md), we need to start converting those thoughts into code! Let's follow the step-by-step guide provided in the course notes and implement our function in [Starter Code](starter_code.py).
 
 ### Step 1: Write Example Uses
 We have already gone through the process in the [Design Section](../Design/README.md)! To have a simpler output instead of (66.6667, 0), we can consider the screen size to be 558 instead of 600 pixels so $558 \div 279 = 2$. Then we can simply multiply each of the distances by 2! This will turn the output to `[(62,0),(124,0),(186,0),(248,0),(372,0),(434,0),(496,0), (558,0)]`. 
@@ -14,7 +14,8 @@ We have already gone through the process in the [Design Section](../Design/READM
 Since we are not writing the function from scratch and we want to see the effect of our code in the solar system simulator, the function recipe is given to us!
 
 ```python
-def compute_init_positions(screen_height, screen_width, solar_distances):
+def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list) -> list[tuple]:
+   pass
 ```
 
 Seeing the function definition, we face the first problem. While we know what `solar_distances` is, instead of a single size for the screen, we have two sizes! This means that we did not consider that the screen is not square. Let's look back at our simulator above! We see that the last planet's distance is constrained by the height of the screen. So should we consider only the `screen_height` parameter? What if the width was smaller? Can we make our code more general with a small effort? Well, we can assume the screen size parameter in the [Design Section](../Design/README.md) as the minimum of the two sizes! So our screen size is now:
@@ -27,17 +28,15 @@ screen_size = min(screen_height, screen_width)
 
 Let's follow the tasks of writing all these things! It is hard! It is boring! But trust me, having comments, input-output checks, etc., in your code will improve your mental health in the long run! Also, embrace this boredom (quoted from [Deep Work](https://www.goodreads.com/book/show/25744928-deep-work))!
 
-TODO by convention, our docstrings should refer to each parameter by name in the docstring when saying what the code will do. Please update this docstring wherever it appears here and in the implementation.
 
 TODO make sure the spacing in the doctest example is consistent wherever it appears here and in the implementation.
 
-TODO for preconditions, CSC148 documents these in the docstring and then assumes they are true in the function body instead of explicitly including assert statements. Please update this for any asserts in the code.
 
 ```python
 def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list) -> list[tuple]:
-    """Return the initial position of each planet
+    """Return the initial position of each planet in the screen with the given screen height and width and solar distances
     >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
-    [(62, 0), (124, 0), (186, 0), (248, 0), (372, 0), (434, 0),(496, 0), (558, 0)]
+    [(527.0, 279), (558.0, 279), (589.0, 279), (620.0, 279), (682.0, 279), (713.0, 279), (744.0, 279), (775.0, 279)]
     """
 ```
 
@@ -50,25 +49,22 @@ Ok, let's get real! Based on the [Design Section](../Design/README.md), the firs
 Let's code this part:
 
 ```python
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
-    """Return the initial position of each planet
+def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list) -> list[tuple]:
+    """Return the initial position of each planet in the screen with the given screen height and width and solar distances
     >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
-    [(62,0),(124,0),(186,0),(248,0),(372,0),(434,0),(496,0), (558,0)]
-    """
-    # Check the precondition
-    assert solar_distances != []  
-    assert screen_height != 0
-    assert screen_width != 0
+    [(527.0,279),(558.0,279),(589.0,279),(620.0,279),(682.0,279),(713.0,279),(744.0,279),(775.0,279)]
 
-    # Compute the distance between the sun and the last planet
-    furthest_planet_distance = sum(solar_distances)
+    Preconditions:
+        - solar_distances != []
+        - screen_height != 0
+        - time_step > 0
+        - screen_width != 0
+    """
 ```
 
 In this example, we use the built-in `sum` function to compute the total distance between the sun and the last planet for us.
 
-TODO replace the blurb below to comment on the preconditions we chose to include instead.
-
-Now in this part, I chose to make the function fail when the screen is not defined properly or the distances are not given. However, when you design your code, you can choose the behavior of your function in these cases and write code to handle these appropriately. 
+Now in this part, 4 preconditions are chosen. I chose to make the function fail when the screen is not defined properly or the distances are not given. However, when you design your code, you can choose the behavior of your function in these cases and write code to handle these appropriately. As a result, based on your design, the precondtions that the function is going to work based on may differ.
 
 Let's move on to the next step mentioned in the [Design Section](../Design/README.md):
 
@@ -88,19 +84,18 @@ $$
 
 Let's add this to the code!
 
-TODO list() should be list; please check for this in all code and fix.
-
 ```python
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
-    """Return the initial position of each planet
+def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list) -> list[tuple]:
+    """Return the initial position of each planet in the screen with the given screen height and width and solar distances
     >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
-    [(62,0),(124,0),(186,0),(248,0),(372,0),(434,0),(496,0), (558,0)]
-    """
+    [(527.0,279),(558.0,279),(589.0,279),(620.0,279),(682.0,279),(713.0,279),(744.0,279),(775.0,279)]
 
-    # Check the precondition
-    assert solar_distances != []
-    assert screen_height != 0
-    assert screen_width != 0
+    Preconditions:
+        - solar_distances != []
+        - screen_height != 0
+        - time_step > 0
+        - screen_width != 0
+    """
 
     # Compute the distance between the sun and the last planet
     furthest_planet_distance = sum(solar_distances)
@@ -113,8 +108,6 @@ def compute_init_positions(screen_height: int, screen_width: int, solar_distance
     screen_distances = [distance * scaling_factor for distance in solar_distances]
 ```
 
-TODO update the above to not use a list comprehension, but rather an accumulator pattern instead with a for-loop.
-
 Now we are reaching the final step of our first design outline, which is:
 
 > 3. Since the coordinates are on the horizontal line in the middle of the screen, the height is zero and the x-values are computed based on the distance of each planet to the sun.
@@ -122,16 +115,17 @@ Now we are reaching the final step of our first design outline, which is:
 Let's implement this! 
 
 ```python
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
-    """Return the initial position of each planet
+def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list) -> list[tuple]:
+    """Return the initial position of each planet in the screen with the given screen height and width and solar distances
     >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
-    [(62,0),(124,0),(186,0),(248,0),(372,0),(434,0),(496,0), (558,0)]
-    """
+    [(527.0,279),(558.0,279),(589.0,279),(620.0,279),(682.0,279),(713.0,279),(744.0,279),(775.0,279)]
 
-    # Check the precondition
-    assert solar_distances != []
-    assert screen_height != 0
-    assert screen_width != 0
+    Preconditions:
+        - solar_distances != []
+        - screen_height != 0
+        - time_step > 0
+        - screen_width != 0
+    """
 
     # Compute the distance between the sun and the last planet
     furthest_planet_distance = sum(solar_distances)
@@ -141,7 +135,9 @@ def compute_init_positions(screen_height: int, screen_width: int, solar_distance
 
     # Compute the scaling factor
     scaling_factor = screen_size / furthest_planet_distance
-    screen_distances = [distance * scaling_factor for distance in solar_distances]
+    screen_distances = []
+    for distance in solar_distances:
+        screen_distances.append(distance * scaling_factor)
 
     # Compute the distance between each planet and sun (the center)
     distance_to_sun_in_screen = 0
@@ -155,12 +151,12 @@ def compute_init_positions(screen_height: int, screen_width: int, solar_distance
     return init_pos
 ```
 
-We save the distance to the sun in the `distance_to_sun_in_screen` variable like what we sketched with pen and paper in the [Design Section](../Design/README.md). The y-axis should be zero as the sun is the center. So the `x = distance_to_sun_in_screen` and the `y = 0` and for each planet, we append this coordinate into the `init_pos` variable. Note that we also put an assert to make sure that the 'distance_to_sun_in_screen' is not violating the basic rule that we saw in [Design Section](../Design/README.md). That is, no planet should be out of the screen! Let's copy this code into [simulate.py](simulate.py) and replace the empty function.
+We save the distance to the sun in the `distance_to_sun_in_screen` variable like what we sketched with pen and paper in the [Design Section](../Design/README.md). The y-axis should be zero as the sun is the center. So the `x = distance_to_sun_in_screen` and the `y = 0` and for each planet, we append this coordinate into the `init_pos` variable. Note that we also put an assert to make sure that the 'distance_to_sun_in_screen' is not violating the basic rule that we saw in [Design Section](../Design/README.md). That is, no planet should be out of the screen! This kind of asserts are normally used during the development of the code. It allow us to check our assumption during the process of writing the code. If our assumptions are violated, we need to be notified. Often time, we forgot these assumption after a while. As a result, it is important to write these assert when writing the code and in the beginning of development.
 
-TODO say a bit more about how you are using assert here to "sanity check your code" when developing it OR just remove this part since it maybe distracts? In some sense, asserts like this are temporary in-line tests which is something we don't do too much of in CSC148, but I am happy to have it included.
+Let's copy this code into [Starter Code](starter_code.py). and replace the empty function.
 
 ```python
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
+def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list) -> list[tuple]:
     pass
 ```
 
@@ -180,7 +176,7 @@ init_positions = compute_init_positions(screen_height, screen_width, solar_dista
 After starting to run this function, it reaches line 271 (the last blue link in the error message, which is the most recent call).
 
 ```python
-        init_pos.append(distance_to_sun_in_screen, 0)
+init_pos.append(distance_to_sun_in_screen, 0)
 ```
 
 When the Python tries to execute this line, it fails, and the reason is written in the error.
@@ -192,7 +188,7 @@ TypeError: list.append() takes exactly one argument (2 given)
 This error says that the `append` method expects a single input, but I am providing two inputs when I am calling it in my code! Looking at the code, I can see that while I thought I was appending a tuple, it is actually considered as two inputs: `distance_to_sun_in_screen` and `0`. So I have to fix this bug by adding parentheses for creating a tuple and then adding it to the `init_pos` list. So the fixed code is:
 
 ```python
-        init_pos.append((distance_to_sun_in_screen, 0))
+init_pos.append((distance_to_sun_in_screen, 0))
 ```
 
 Let's run the code and enjoy our solar system!
@@ -216,7 +212,7 @@ and ..
 Well, at first glance it is a red error! But, looking closer, it seems that the implementation of our function is not the problem. The "Expected" values and the "Got" are not different! But why this error? Remember that programming languages are not smart! So, maybe the string in Expected and Got are not the same! Remember, doctest works by checking for exact string matches between the expected and actual output! So I change the doctest to this:
 
 ```Python
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
+def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list) -> list[tuple]:
     """Return the intial position of each planet
     >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
     [(62.0, 0), (124.0, 0), (186.0, 0), (248.0, 0), (372.0, 0), (434.0, 0), (496.0, 0), (558.0, 0)]
@@ -227,16 +223,18 @@ And now our doctest passes! So next time that I am writing a doctest, I will mak
 
 
 ```Python
-def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list()) -> list[tuple]:
+def compute_init_positions(screen_height: int, screen_width: int, solar_distances: list) -> list[tuple]:
     """Return the initial position of each planet
     >>> compute_init_positions(558,992,[31, 31, 31, 31, 62, 31, 31, 31])
     [(62.0, 0), (124.0, 0), (186.0, 0), (248.0, 0), (372.0, 0), (434.0, 0), (496.0, 0), (558.0, 0)]
-    """
 
-    # Check the precondition
-    assert solar_distances != []
-    assert screen_height != 0
-    assert screen_width != 0
+
+    Preconditions:
+        - solar_distances != []
+        - screen_height != 0
+        - time_step > 0
+        - screen_width != 0
+    """
 
     # Compute the distance between the sun and the last planet
     furthest_planet_distance = sum(solar_distances)
@@ -351,4 +349,5 @@ Now let's see the output!
 
 Congratulations! You have now successfully completed your task! But, can we share our code with other people working on this simulation project? You are giving them this code, but can they understand it? What if they want to use your code in another coordinate system instead of Pygame? That is why it is always important to document your code so that others know how to use it! There are many ways to document code, but each organization or group of people often uses specific rules to be consistent and reduce ambiguity. In this course, we use PEP-8 standard and PyTA module for checking whether we are complying to PEP-8 standards as well as given instructions for documenting our code! Let's update our code with appropriate documentation using [PyTA](../PyTA/README.md)!
 
+TODO: Figures should be updated based on the final code. Also, a check is required to make sure that each code will generate the errors that are intended to be generated, as I had multiple pass on the code base of this tutorial.
 

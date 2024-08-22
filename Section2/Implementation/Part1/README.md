@@ -1,4 +1,4 @@
-![Solar System Simulation](../Figures/PlanetWithMeteor.gif)
+![Solar System Simulation](../../section2_anim1.gif)
 
 # Expanding Solar System - Part 1!
 

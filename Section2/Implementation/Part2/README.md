@@ -1,4 +1,4 @@
-![Solar System Simulation](../Figures/PlanetWithMeteor.gif)
+![Solar System Simulation](../../section2_anim1.gif)
 
 # Expanding Solar System - Part 2!
 
@@ -137,7 +137,7 @@ for id in range(0, 10):
 
 Here, I also didn't want to hack how the color of meteor is going to be set with id, so I start with 0 to 10 ids for the meteors. Now without knowing the simulator code base, let's run this code with the added ```Meteor``` class. 
 
-![simulation](Figures/ClassBasedResults.gif)
+![Solar System Simulation](../../section2_anim1.gif)
 
 Well, it works! Let's pause for a moment and enjoy the cleanness of this procedure! 
 
@@ -213,7 +213,7 @@ In ```draw``` method we can also see the same reasoning. However, due to the req
 
 Now as an exercise and using the code bases that we have so far, see whether you can create a particle simulator like below. This exercise will show you the reusibility of the class based code that we have compared to the function based code! The solution for this exercise is in [here](Exercise_Solution/particle_simulator.py). But, I strongly suggest you to try to do it yourself as you have all the necessary knowledge to develop this. Enjoy!
 
-![simulation](Figures/particle_simulation.gif)
+![Solar System Simulation](../../section2_anim2.gif)
 
 Finally note that we just scratched the surface! It is not always true that having objects and class for everything is beneficial. The life is about balance after all! So be careful about the complexity and efficiency of your code when developing.
 

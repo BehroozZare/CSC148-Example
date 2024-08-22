@@ -1,5 +1,5 @@
+from __future__ import annotations
 from typing import Any
-
 import pygame
 import sys
 import math
@@ -13,6 +13,18 @@ class Particle:
         self.x = x
         self.y = y
         self.radius = radius
+
+    def __lt__(self, other):
+        """Return True if this particle is less than <other> particle.
+        """
+        if self.x == other.x:
+            return self.y < other.y
+        return self.x < other.x
+
+    def __eq__(self, other):
+        """Return True if this particle is equal to <other> particle.
+        """
+        return self.x == other.x and self.y == other.y
 
 
 class _Node:
@@ -28,13 +40,23 @@ class _Node:
         The next node in the list, or None if there are no more nodes.
     """
     item: Any
-    next: '_Node | None'  # Fix type annotation
+    next: _Node | None  # Fix type annotation
 
     def __init__(self, item: Any) -> None:
         """Initialize a new node storing <item>, with no next node.
         """
         self.item = item
         self.next = None  # Initially pointing to nothing
+
+    def __lt__(self, other: _Node):
+        """Return True if this node is less than <other> node.
+        """
+        return self.item < other.item
+
+    def __eq__(self, other):
+        """Return True if this node is equal to <other> node.
+        """
+        return self.item == other.item
 
 
 class LinkedList:
@@ -53,17 +75,52 @@ class LinkedList:
 
     def append(self, item: Any) -> None:
         """Add the given item to link list while maintain the order."""
-        pass
+        new_node = _Node(item)
+        if self._first is None or new_node < self._first:
+            new_node.next = self._first
+            self._first = new_node
+        else:
+            current = self._first
+            while current.next is not None and current.next < new_node:
+                current = current.next
+            new_node.next = current.next
+            current.next = new_node
+        self.size += 1
 
     def get(self, index: int) -> Any:
-        """Return the item of a Node at position <index> in this linked list.
+        """Return the item at position <index> in this linked list.
+
+        Preconditions:
+            - index >= 0
+            - index < self.size
         """
-        pass
+        if index >= self.size or index < 0:
+            raise IndexError("Index out of bounds")
+        current = self._first
+        for _ in range(index):
+            current = current.next
+        return current.item
 
     def pop(self, index: int) -> Any:
-        """Remove the node and return the item at position <index>.
+        """Remove and return node at position <index>.
+
+        Preconditions:
+            - index >= 0
+            - index < self.size
         """
-        pass
+        if index >= self.size or index < 0:
+            raise IndexError("Index out of bounds")
+        if index == 0:
+            removed_item = self._first.item
+            self._first = self._first.next
+        else:
+            current = self._first
+            for _ in range(index - 1):
+                current = current.next
+            removed_item = current.next.item
+            current.next = current.next.next
+        self.size -= 1
+        return removed_item
 
 
 class Simulator:
@@ -162,10 +219,9 @@ if __name__ == "__main__":
     SCREEN_WIDTH = 16 * SCREEN_SCALER
     SCREEN_HEIGHT = 9 * SCREEN_SCALER
 
-    TIME_STEP = 0.05
     SAVE_GIF = True
     GIF_NAME = 'animation.gif'
-    MAX_NUM_PARTICLES = 200
+    MAX_NUM_PARTICLES = 100
 
     simulator = Simulator(SCREEN_WIDTH, SCREEN_HEIGHT, MAX_NUM_PARTICLES,
                           SAVE_GIF, GIF_NAME)

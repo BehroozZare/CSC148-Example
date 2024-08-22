@@ -2,7 +2,7 @@
 
 In this part of the practice, we will quickly go over the errors encountered when using PyTA. The objective is to familiarize you with PyTA and provide approaches to solving the errors you may face during the documentation of your code. Compared to the previous section, where we dealt with syntax and logical errors, this part is much more straightforward (most of the time).
 
-To provide plenty of PyTA debugging exercises, we will document the whole simulator code instead of just our function. To start, run this [file](simulator_pyta_before.py). After executing it, a webpage consisting of the style problems will open, resembling the header above. On the left of the webpage, you can see a list of style errors by category. In the middle, all the styling errors are represented with explanations of what each error means. Let's start with the pep8-errors category.
+To provide plenty of PyTA debugging exercises, we will document the whole simulator code instead of just our function. To start, run [starter_code](starter_code.py). After executing it, a webpage consisting of the style problems will open, resembling the header above. On the left of the webpage, you can see a list of style errors by category. In the middle, all the styling errors are represented with explanations of what each error means. Let's start with the pep8-errors category.
 
 ![alt text](Figures/PEP8_ERROR_1.jpeg)
 
@@ -44,7 +44,7 @@ What a day! Let's check out other problems!
 
 ![alt text](Figures/TooLongDoc.png)
 
-Here we can see that docstrings are not going to be fixed with the reformat option. While we can fix this with features such as "Fill Paragraph," we need to note that if we want to use the doctest capability, we can't change the line format as doctest only checks the characters of output with respect to input. This is basically one of the drawbacks of doctests. So let's fix the docstrings other than doctests. For example, in the following line, we can see that PyCharm lets us know which lines have a problem with an orange underline.
+Here we can see that docstrings are not going to be fixed with the reformat option. While we can fix this with features such as "Fill Paragraph," we need to note that if we want to use the doctest capability, we can't change the line format as doctest only checks the characters of output with respect to input. This is basically one of the drawbacks of doctests. That is, it is hard to write extensive doctests and maintain it as a single string change can cause us trouble. For this case, let's first fix the function explnation and then the docstring. In the following line, we can see that PyCharm lets us know which lines have a problem with an orange underline.
 
 ![alt text](Figures/LongDocTestExample.png)
 
@@ -53,6 +53,21 @@ We can now fix the docstring by pressing enter after the word "given," or we can
 ![alt text](Figures/FillTheParagraph.png)
 
 By clicking on the `Fill the paragraph`, PyCharm automatically fixes the long line.
+
+To fix the docstring, I changed the doctest by using ```\``` to break the lines.
+
+```python
+def create_planet(idx: int, x: float, y: float, radius: float,
+                  center_x: float = None, center_y: float = None,
+                  angle_speed: float = None) -> dict:
+    """Return a planet dictionary with the ID parameter id, the x and y coordinates of the planet, the radius of the planet, and center of oribit
+defined by center_x and center_y, and the angle_speed of the planet
+    >>> create_planet(0, 4, 4, 30, 0, 0, 5) == {'id': 0, 'x': 4, 'y': 4,\
+'radius': 30, 'color': (255, 255, 255), 'center_x': 0,'center_y': 0,\
+ 'orbit_radius': 5.656854249492381, 'angle':0.7853981633974483,\
+'angle_speed': 5}
+    True
+```
 
 Let's continue with the `redefined-builtin` category. This is actually a pretty dangerous error. It says that the input of `create_planet` `id` is a built-in function. While due to the scope of this function, it did not cause an error. However, if the code expands, it might end up in a very dangerous bug where the built-in function `id` is going to be used instead of our variable `id` or vice versa! So we need to immediately fix this. To fix this bug, I just change `id` to `idx` whenever I meant `id`.
 
@@ -73,3 +88,5 @@ Let's now address another category (I want to cry)! Well, the error is pretty st
 ![alt text](Figures/ConstantIssue.png)
 
 And with this, we create a PEP8-friendly codebase. While it is tedious in the beginning, the more you code in a specific style, the more natural it becomes to code that way. Of course, in the long run, you will thank yourself for doing this chore as it will tremendously help you and others in expanding your codebase.
+
+TODO:Check contract should be added to this tutorial and figures should be make consistant.

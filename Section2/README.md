@@ -1,4 +1,4 @@
-![alt text](Design/Figures/PlanetWithMeteor.gif)
+![alt text](section2_anim1.gif)
 
 This section is divided into three parts:
 
@@ -6,4 +6,4 @@ This section is divided into three parts:
 
 2. **[Implementation](Implementation/README.md)**: In this part, we implement our design. To provide intuition on the difference between class-based programming and function-based programming, we will implement our design in both a function-based simulator and a class-based simulator. This part will be fun! The approximate reading time for both parts is around 30 minutes.
 
-3. **[Unit Test]()**: 
+3. **[Unit Test]()**: TODO: Later

@@ -4,11 +4,11 @@
 
 ## Objective
 
-This is complementary material for section 1.3 (The Function Design Recipe) of the CSC148 course. Here, we want to see the process of writing a function that will be used in this beautiful, circular solar system visualization! Here's what we are asked to do:
+This is complementary material for section 1.3 (The Function Design Recipe) of the CSC148 course. Here, we want to see the process of coding a function that will be used in this beautiful, circular solar system visualization! Here's what we are asked to do:
 
 > Assume that the planets start moving around the sun from the horizontal line on the right of the sun that goes through the middle of the screen. Given the distances between planets and the screen size, return the x and y coordinates of the starting position of each planet. As an example, assume the following given distances between planets in million km: `[31, 31, 31, 31, 62, 31, 31, 31]`, which produces the above animation. Note that the distance between the sun and the closest planet is the first entry which is 31 million km. Return the initial (x,y) coordinates for each planet.
 
-Before we start writing a program, we often have a vague idea, such as the one above, of what we want to write. Programming languages are just tools for us to turn our thoughts into something more practical. However, programming languages have limited capabilities, and we need to simplify our thought process to be able to express our ideas using the functionality and syntax of the programming language.
+Before we start writing a program, we often have a vague idea, such as the one above, of what we want to code. Programming languages are just tools for us to turn our thoughts into something more practical. However, programming languages have limited capabilities, and we need to simplify our thought process to be able to express our ideas using the functionality and syntax of the programming language. By simplifying, I mean to break the process into a detailed simple steps to show the computer what we need to do.
 
 Let's get back to our problem. We have some distances between planets. What is the objective? What are the inputs? What are the expected outputs? Let's use pen and paper to understand what these distances represent. The question mentions a horizontal line that goes through the middle of the screen and planets start moving from there. Let's start with something like the sketch below to visualize the problem:
 

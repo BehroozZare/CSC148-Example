@@ -10,9 +10,10 @@ from python_ta.contracts import check_contracts
 
 def create_planet(id: int, x: float, y: float, radius: float,
                   center_x: float = None, center_y: float = None, angle_speed: float = None) -> dict:
-    """Return a planet dictionary with the given parameters
-    >>> create_planet(0, 4, 4, 30, 0, 0, 5)
-    {'id': 0, 'x': 4, 'y': 4, 'radius': 30, 'color': (255, 255, 255), 'shape': 'circle', 'center_x': 0, 'center_y': 0, 'orbit_radius': 5.656854249492381, 'angle': 0.7853981633974483, 'angle_speed': 5}
+    """Return a planet dictionary with the ID parameter id, the x and y coordinates of the planet, the radius of the planet, and center of oribit
+defined by center_x and center_y, and the angle_speed of the planet
+    >>> create_planet(0, 4, 4, 30, 0, 0, 5) == {'id': 0, 'x': 4, 'y': 4,'radius': 30, 'color': (255, 255, 255), 'center_x': 0,'center_y': 0,'orbit_radius': 5.656854249492381, 'angle':0.7853981633974483,'angle_speed': 5}
+    True
 
     Preconditions:
       - radius > 0
@@ -35,8 +36,8 @@ def create_planet(id: int, x: float, y: float, radius: float,
     }
 
 
-def move_planet(planet: list, time_step: float) -> None:
-    """Move a planet in its orbit
+def move_planet(planet: dict, time_step: float) -> None:
+    """Move a planet in its orbit based on the time_step between each frame
 
     Preconditions:
       - planet['orbit_radius'] != None
@@ -54,7 +55,7 @@ def move_planet(planet: list, time_step: float) -> None:
 
 
 def update_color(planet: dict) -> None:
-    """Update color of planets in each frame
+    """Update color of input planet in each frame
 
     Preconditions:
       - planet['id'] != None
@@ -74,7 +75,8 @@ def update_color(planet: dict) -> None:
 
 
 def init_pygame(width: float, height: float)-> Surface | Clock:
-    """Initialize Pygame and return the screen and clock
+    """Initialize Pygame and the screen size of width and height and return the screen and clock
+    handles
 
     Preconditions:
         - width > 0
@@ -86,7 +88,7 @@ def init_pygame(width: float, height: float)-> Surface | Clock:
 
 
 def draw(screen: Surface, objects: dict) -> None:
-    """draw the scene in each frame
+    """draw the scene of the screen based on the objects in the screen
     
     Preconditions:
         - screen != None
@@ -100,8 +102,9 @@ def draw(screen: Surface, objects: dict) -> None:
         pygame.draw.circle(screen, obj['color'], (int(obj['x']), int(obj['y'])), obj['radius'])
 
 
-def run_simulation(width: float, height: float, time_step: float, astronomical_objects: list, save_gif: bool = False, gif_name: bool = 'simulation.gif') -> None:
-    """Given the screen dimensions, time step, astronomical objects, and other parameters, run the simulation
+def run_simulation(width: float, height: float, time_step: float, astronomical_objects: list, save_gif: bool = False, gif_name: str = 'simulation.gif') -> None:
+    """Given the screen width and height, time step, astronomical objects that will be simulate on the screen,
+     it will create a simulation that when closed, the entire simulation will be saved on gif_name address if the save_gif flag is True
     
     Preconditions:
         - width > 0
@@ -165,7 +168,7 @@ def compute_init_positions(screen_height: int, screen_width: int, solar_distance
     screen_distances = []
     for distance in solar_distances:
         screen_distances.append(distance * scaling_factor)
-        
+
     # Compute the distance between each planet and sun (the center)
     distance_to_sun_in_screen = 0
     init_pos = []
@@ -180,6 +183,9 @@ def compute_init_positions(screen_height: int, screen_width: int, solar_distance
 
 # Example usage
 if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+
     python_ta.check_all(config="PyTA_Config.txt")
     # Screen dimensions
     x = 80
